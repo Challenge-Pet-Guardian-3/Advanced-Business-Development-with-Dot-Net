@@ -18,7 +18,7 @@
 
 ## Repositório Github | Extra Vídeo rodando no Azure
 
-[Repositório Github](https://github.com/Challenge-Pet-Guardian/Advanced-Business-Development-with-Dot-Net) | [Vídeo rodando no Azure](https://youtu.be/-527YLVrnPA?si=3yqv67g0ibO2n-Ds)
+[Repositório Github](https://github.com/Challenge-Pet-Guardian-3/Advanced-Business-Development-with-Dot-Net) | [Vídeo rodando no Azure]()
 
 
 ---
