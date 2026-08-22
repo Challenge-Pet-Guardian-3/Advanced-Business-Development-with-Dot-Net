@@ -2,6 +2,9 @@
 
 > **Projeto:** PetGuardian — Plataforma Pet-Centric de Cuidado e Saúde Animal (Challenge Clyvo 2026)  
 > **Disciplina:** Advanced Business Development with .NET (FIAP — 2º Ano ADS)  
+> **Epic Principal:** `[EPIC] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`  
+> **Start Date:** `2026-08-24`  
+> **Target Date:** `2026-08-29`  
 > **Sprint:** 3ª Sprint (Refatoração CRUD, Monitoramento, Observabilidade & Testes Automatizados AAA)  
 > **Referência Oficial:** Manual do Challenge 2026 — Páginas 07 e 08  
 > **Diretrizes da Mentoria Clyvo:** Arquitetura Pet-Centric (Score e Nível no Pet, Rotina Familiar, Clínicas 24h)  
@@ -73,6 +76,9 @@ Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combi
 ### 🏛️ ÉPICO
 * **Work Item Type:** `Epic`
 * **Title:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
+* **Tags:** `DotNet`
+* **Start Date:** `2026-08-24`
+* **Target Date:** `2026-08-29`
 * **Description:** Evolução corporativa da plataforma ASP.NET Core PetGuardian iniciando pela consolidação das operações de atualização (PUT), incorporando monitoramento de saúde via Health Checks, logging estruturado correlacionado com Serilog, telemetria distribuída e métricas com OpenTelemetry, e suíte completa de testes automatizados unitários e de integração no padrão AAA.
 
 ---
@@ -81,6 +87,9 @@ Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combi
 * **Work Item Type:** `Feature`
 * **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)`
+* **Tags:** `DotNet`
+* **Start Date:** `2026-08-24`
+* **Target Date:** `2026-08-25`
 * **Description:** Completar o ciclo RESTful da API fornecendo endpoints de atualização (`PUT`), validação de dados, métodos de negócio em entidades de domínio Pet-Centric e persistência no banco de dados Oracle via Entity Framework Core, servindo de base para os testes de integração e a disciplina integrada de DevOps.
 
 #### 🔹 [PBI-01] Implementação de Atualização (PUT) Pet-Centric para Pet e Usuário
@@ -148,6 +157,9 @@ Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combi
 * **Work Item Type:** `Feature`
 * **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-02] Monitoramento, Observabilidade e Diagnóstico da Aplicação`
+* **Tags:** `DotNet`
+* **Start Date:** `2026-08-25`
+* **Target Date:** `2026-08-27`
 * **Description:** Implementar a infraestrutura completa de observabilidade corporativa incluindo verificação de saúde (Health Checks), registro em log estruturado correlacionado por requisição (Serilog) e rastreamento distribuído com métricas de desempenho (OpenTelemetry).
 
 #### 🔹 [PBI-03] Implementação de Health Checks Corporativos (API & Oracle Database)
@@ -253,6 +265,9 @@ Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combi
 * **Work Item Type:** `Feature`
 * **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-03] Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory`
+* **Tags:** `DotNet`
+* **Start Date:** `2026-08-27`
+* **Target Date:** `2026-08-28`
 * **Description:** Implementação de suíte abrangente de testes automatizados com cobertura das camadas de Domínio e Aplicação (testes unitários com Moq) e testes de integração de ponta a ponta para os endpoints da API com WebApplicationFactory e Fixtures.
 
 #### 🔹 [PBI-06] Estruturação dos Projetos de Teste e Testes Unitários de Domínio (AAA)
@@ -363,6 +378,9 @@ Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combi
 * **Work Item Type:** `Feature`
 * **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-04] Documentação Técnica, Guias de Execução e Atualização do README`
+* **Tags:** `DotNet`
+* **Start Date:** `2026-08-28`
+* **Target Date:** `2026-08-29`
 * **Description:** Estruturação e publicação da documentação técnica no README.md, incluindo instruções de build, execução de testes unitários/integração, visualização de Health Checks e endpoints OpenAPI/Swagger.
 
 #### 🔹 [PBI-09] Atualização da Documentação Técnica (README.md, Health Checks, Testes e OpenAPI)
