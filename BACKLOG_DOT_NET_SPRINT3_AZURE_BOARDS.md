@@ -1,111 +1,107 @@
 # 📋 Backlog Master Azure Boards — Sprint 3 (.NET & Observabilidade)
 
-> **Projeto:** PetGuardian — Rede Colaborativa de Cuidado Animal  
+> **Projeto:** PetGuardian — Plataforma Pet-Centric de Cuidado e Saúde Animal (Challenge Clyvo 2026)  
 > **Disciplina:** Advanced Business Development with .NET (FIAP — 2º Ano ADS)  
-> **Sprint:** 3ª Sprint (Monitoramento, Observabilidade, Testes Automatizados AAA & Refatoração CRUD)  
+> **Sprint:** 3ª Sprint (Refatoração CRUD, Monitoramento, Observabilidade & Testes Automatizados AAA)  
+> **Referência Oficial:** Manual do Challenge 2026 — Páginas 07 e 08  
+> **Diretrizes da Mentoria Clyvo:** Arquitetura Pet-Centric (Score e Nível no Pet, Rotina Familiar, Clínicas 24h)  
+> **Sequência Estratégica:** 1º Refatoração CRUD (PUT) ➔ 2º Observabilidade ➔ 3º Testes AAA ➔ 4º Documentação  
 > **Padrão:** Scrum Process Template (Azure DevOps / Azure Boards)
 
 ---
 
-## 🧭 1. Resumo Executivo & Análise de Requisitos (Páginas 07 e 08)
+## 🎯 1. Diagnóstico e Matriz Oficial de Avaliação da Sprint 3 (Páginas 07 e 08)
 
-Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 08)** e inspeção minuciosa da base de código atual do **PetGuardian**, foram identificados os seguintes direcionamentos estratégicos e lacunas críticas:
+Conforme estabelecido nas **páginas 07 e 08 do manual oficial**, a sprint combina a **1ª AÇÃO de Refatoração do CRUD (PUT)** para estabilizar os contratos de dados e viabilizar os testes com os **3 pilares avaliativos oficiais (100 pontos)** da disciplina de .NET:
 
-### ⚠️ Gaps e Pontos Críticos Identificados no Projeto Atual:
-1. **Ausência Completa de Endpoints de Atualização (`PUT`/Update):**
-   * Nenhum dos Controllers (`PetController`, `UsuarioController`, `VeterinarioController`, `ClinicaController`, `AtendimentoController`, etc.) possui endpoints HTTP `PUT` implementados.
-   * Não existem DTOs de Update (`PetUpdateRequest`, `UsuarioUpdateRequest`, etc.) nem métodos correspondentes nos contratos de serviço e na camada de domínio.
-   * *Impacto:* Além de violar o padrão RESTful completo, a disciplina integrada de **DevOps (Página 12 e 14)** exige expressamente a demonstração de **Update/Alteração** no CRUD com evidência de `SELECT` no banco, sob pena de perda de até 30 pontos.
-2. **Inexistência de Projetos de Testes Automatizados na Solution:**
-   * A solução `.sln` contém apenas os projetos de produção (`API`, `Application`, `Domain`, `Infrastructure`). É obrigatório criar `PetGuardian.UnitTests` e `PetGuardian.IntegrationTests` separados por camada, com nomenclatura padronizada e Fixtures de contexto.
-3. **Falta da Camada de Observabilidade & Monitoramento Corporativo:**
-   * Ausência de `Health Checks` com `Microsoft.Extensions.Diagnostics.HealthChecks` para avaliar a saúde da API e a conectividade com o banco Oracle.
-   * Ausência de logging estruturado com `Serilog` (Console/Arquivo) e middleware de `Correlation ID` (`X-Correlation-ID`).
-   * Ausência de Distributed Tracing e Métricas com `OpenTelemetry` para monitorar tempos de resposta e taxa de erros entre camadas.
+| Componente / Módulo | Pontuação Oficial | Itens Obrigatórios do Edital (Páginas 07 e 08) & Mentoria Clyvo | Status no Backlog |
+| :--- | :---: | :--- | :--- |
+| **1ª AÇÃO: Refatoração CRUD (PUT)** | *Base Técnica & DevOps* | • Implementação de verbos HTTP `PUT` em `Pet` (com `ScoreBemEstar`, `PesoAtual`), `Usuario`, `Tarefa`, `Atendimento` e `Clinica` (24h/emergência) com métodos de negócio encapsulados.<br>• Viabiliza os testes de integração e a demonstração de Update exigida na disciplina de DevOps. | **FEAT-01 (10 SP)** |
+| **1. Monitoramento e Observabilidade** | **40 pts** | • **Health Checks (15 pts):** `/health`, `/health/ready` (Oracle DB) e `/health/live` via `Microsoft.Extensions.Diagnostics.HealthChecks`.<br>• **Logging Estruturado (10 pts):** Serilog (Info, Warning, Error), saída Console/Arquivo com rotação diária e Correlation ID (`X-Correlation-ID`).<br>• **Tracing e Métricas (15 pts):** OpenTelemetry (Distributed Tracing entre camadas e métricas de latência/erros). | **FEAT-02 (15 SP)** |
+| **2. Testes Automatizados (Padrão AAA)** | **50 pts** | • **Testes Unitários (20 pts):** xUnit no padrão Arrange, Act, Assert com `Moq` para Domínio e Serviços de Aplicação.<br>• **Testes de Integração (15 pts):** `WebApplicationFactory` para homologação de endpoints HTTP reais, status codes (200, 201, 204, 400, 404) e tratamento global de erros.<br>• **Cobertura & Organização (15 pts):** Projetos segregados (`UnitTests`, `IntegrationTests`), nomenclatura padronizada e Fixtures de contexto compartilhado. | **FEAT-03 (18 SP)** |
+| **3. Atualização do README.md** | **10 pts** | • Guia completo dos endpoints de Health Check e como monitorar a API.<br>• Instruções claras de execução dos testes (`dotnet test`).<br>• Descrição arquitetural das novas funcionalidades. | **FEAT-04 (2 SP)** |
+| **TOTAL CONSOLIDADO** | **100 pts Oficiais** | **Foco Estrito na Sprint 3** *(Requisitos de Sprint 4 como MongoDB, HATEOAS, Paginação e JWT Identity mantidos para a próxima entrega).* | **45 Story Points** |
 
 ---
 
-## 👑 2. Hierarquia Geral do Backlog (Azure Boards)
+## 👑 2. Hierarquia Geral do Backlog no Azure Boards
 
 ```text
-[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)
+[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)
 │
-├── [FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)
-│   ├── [PBI-01] Implementação de Atualização (PUT) para Pet e Usuário (Cuidadores)
-│   └── [PBI-02] Implementação de Atualização (PUT) para Atendimento, Tarefa, Veterinário e Clínica
+├── 🧹 [FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)
+│   ├── [PBI-01] Implementação de Atualização (PUT) Pet-Centric para Pet e Usuário (5 pts)
+│   └── [PBI-02] Implementação de Atualização (PUT) para Atendimento, Tarefa, Clínicas 24h e Cadastros (5 pts)
 │
-├── [FEAT-02] Monitoramento, Observabilidade e Diagnóstico da Aplicação (40 pts)
-│   ├── [PBI-03] Implementação de Health Checks Corporativos (API & Oracle Database)
-│   ├── [PBI-04] Logging Estruturado com Serilog, Níveis de Log e Correlation ID
-│   └── [PBI-05] Rastreamento Distribuído (Distributed Tracing) e Métricas com OpenTelemetry
+├── 🩺 [FEAT-02] Monitoramento, Observabilidade e Diagnóstico da Aplicação (40 pts)
+│   ├── [PBI-03] Implementação de Health Checks Corporativos (API & Oracle Database) (5 pts)
+│   ├── [PBI-04] Logging Estruturado com Serilog, Níveis de Log e Correlation ID (5 pts)
+│   └── [PBI-05] Rastreamento Distribuído (Distributed Tracing) e Métricas com OpenTelemetry (5 pts)
 │
-├── [FEAT-03] Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory (50 pts)
-│   ├── [PBI-06] Estruturação dos Projetos de Teste e Testes Unitários de Domínio (AAA)
-│   ├── [PBI-07] Testes Unitários da Camada de Aplicação com Mocking de Dependências (Moq)
-│   └── [PBI-08] Testes de Integração de Endpoints HTTP com WebApplicationFactory & Fixtures
+├── 🧪 [FEAT-03] Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory (50 pts)
+│   ├── [PBI-06] Estruturação dos Projetos de Teste e Testes Unitários de Domínio (AAA) (5 pts)
+│   ├── [PBI-07] Testes Unitários da Camada de Aplicação com Mocking de Dependências (Moq) (5 pts)
+│   └── [PBI-08] Testes de Integração de Endpoints HTTP com WebApplicationFactory & Fixtures (8 pts)
 │
-└── [FEAT-04] Documentação Técnica, Guias de Execução e Atualização do README (10 pts)
-    └── [PBI-09] Atualização da Documentação Técnica (README.md, Health Checks, Testes e OpenAPI)
+└── 📑 [FEAT-04] Documentação Técnica, Guias de Execução e Atualização do README (10 pts)
+    └── [PBI-09] Atualização da Documentação Técnica (README.md, Health Checks, Testes e OpenAPI) (2 pts)
 ```
 
 ---
 
-## 📊 3. Tabela de Visão Geral, Story Points e Prioridades
+## 📊 3. Tabela Resumo do Backlog (Story Points & Prioridades)
 
-| ID | Título do Item de Backlog (PBI) | Feature Pai | Story Points | Prioridade | Estimativa (Horas) |
-| :--- | :--- | :--- | :---: | :---: | :---: |
-| **PBI-01** | Implementação de Atualização (PUT) para Pet e Usuário | FEAT-01 (CRUD Update) | 5 pts | 1 - Critical | 7h |
-| **PBI-02** | Implementação de Atualização (PUT) para Atendimento, Tarefa e Cadastros | FEAT-01 (CRUD Update) | 5 pts | 2 - High | 7h |
-| **PBI-03** | Health Checks Corporativos (API, Oracle DB e Serviços) | FEAT-02 (Observabilidade) | 5 pts | 1 - Critical | 6h |
-| **PBI-04** | Logging Estruturado com Serilog, Console/Arquivo e Correlation ID | FEAT-02 (Observabilidade) | 5 pts | 1 - Critical | 6h |
-| **PBI-05** | Distributed Tracing e Métricas de Performance com OpenTelemetry | FEAT-02 (Observabilidade) | 5 pts | 2 - High | 7h |
-| **PBI-06** | Estruturação de Testes e Testes Unitários de Domínio (AAA) | FEAT-03 (Testes AAA) | 5 pts | 1 - Critical | 8h |
-| **PBI-07** | Testes Unitários de Aplicação com Mocking (Moq / NSubstitute) | FEAT-03 (Testes AAA) | 5 pts | 1 - Critical | 8h |
-| **PBI-08** | Testes de Integração de Endpoints com WebApplicationFactory | FEAT-03 (Testes AAA) | 8 pts | 1 - Critical | 10h |
-| **PBI-09** | Atualização do README.md com Guias de Health Check e Testes | FEAT-04 (Documentação) | 2 pts | 2 - High | 3h |
-| **TOTAL** | **9 PBIs / 31 Child Tasks Técnicas** | — | **45 pts** | — | **62h** |
+| ID | Título do Item de Backlog (PBI) | Feature Pai | Pontuação Oficial | Story Points | Prioridade | Horas |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
+| **PBI-01** | Implementação de Atualização (PUT) Pet-Centric para Pet e Usuário | `[FEAT-01]` CRUD Update | Base / DevOps | **5 pts** | 1 - Critical | 7h |
+| **PBI-02** | Implementação de Atualização (PUT) para Atendimento, Tarefa e Clínicas 24h | `[FEAT-01]` CRUD Update | Base / DevOps | **5 pts** | 1 - Critical | 7h |
+| **PBI-03** | Health Checks Corporativos (API, Oracle DB e Serviços) | `[FEAT-02]` Observabilidade | 15 pts | **5 pts** | 1 - Critical | 6h |
+| **PBI-04** | Logging Estruturado com Serilog, Console/Arquivo e Correlation ID | `[FEAT-02]` Observabilidade | 10 pts | **5 pts** | 1 - Critical | 6h |
+| **PBI-05** | Distributed Tracing e Métricas de Performance com OpenTelemetry | `[FEAT-02]` Observabilidade | 15 pts | **5 pts** | 2 - High | 7h |
+| **PBI-06** | Estruturação de Testes e Testes Unitários de Domínio (AAA) | `[FEAT-03]` Testes AAA | 20 pts *(c/ PBI-07)* | **5 pts** | 1 - Critical | 8h |
+| **PBI-07** | Testes Unitários de Aplicação com Mocking (Moq / NSubstitute) | `[FEAT-03]` Testes AAA | *(incluso acima)* | **5 pts** | 1 - Critical | 8h |
+| **PBI-08** | Testes de Integração de Endpoints com WebApplicationFactory & Fixtures | `[FEAT-03]` Testes AAA | 30 pts | **8 pts** | 1 - Critical | 10h |
+| **PBI-09** | Atualização do README.md com Guias de Health Check, Testes e OpenAPI | `[FEAT-04]` Documentação | 10 pts | **2 pts** | 2 - High | 3h |
+| **TOTAL** | **9 PBIs / 31 Child Tasks Técnicas** | **4 Features / 1 Epic** | **100 pts** | **45 pts** | — | **62h** |
 
 ---
 
-## 📦 4. Detalhamento dos Itens de Trabalho (Épicos, Features, PBIs e Tasks)
+## 📦 4. Detalhamento dos Itens de Trabalho (Épico, Features, PBIs e Tasks)
 
 ---
 
 ### 🏛️ ÉPICO
 * **Work Item Type:** `Epic`
-* **Title:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)`
-* **Description:** Evolução da plataforma ASP.NET Core PetGuardian incorporando camadas corporativas de observabilidade, monitoramento de saúde, logging correlacionado, telemetria distribuída, bateria completa de testes automatizados unitários e de integração no padrão AAA, além da consolidação do CRUD com operações de atualização (PUT).
+* **Title:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
+* **Description:** Evolução corporativa da plataforma ASP.NET Core PetGuardian iniciando pela consolidação das operações de atualização (PUT), incorporando monitoramento de saúde via Health Checks, logging estruturado correlacionado com Serilog, telemetria distribuída e métricas com OpenTelemetry, e suíte completa de testes automatizados unitários e de integração no padrão AAA.
 
 ---
 
-### 🌟 FEATURE 01: Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)
+### 🧹 FEATURE 01: Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)
 * **Work Item Type:** `Feature`
-* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)`
+* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)`
-* **Description:** Completar o ciclo RESTful da API fornecendo endpoints de atualização (`PUT`), validação de dados, métodos de negócio em entidades de domínio e persistência no banco de dados Oracle via Entity Framework Core.
+* **Description:** Completar o ciclo RESTful da API fornecendo endpoints de atualização (`PUT`), validação de dados, métodos de negócio em entidades de domínio Pet-Centric e persistência no banco de dados Oracle via Entity Framework Core, servindo de base para os testes de integração e a disciplina integrada de DevOps.
 
----
-
-#### 🔹 [PBI-01] Implementação de Atualização (PUT) para Pet e Usuário (Cuidadores)
+#### 🔹 [PBI-01] Implementação de Atualização (PUT) Pet-Centric para Pet e Usuário
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `[FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `DotNet`, `API`, `CRUD`, `Domain`, `Sprint3`
+* **Tags:** `DotNet`, `API`, `CRUD`, `Domain`, `PetCentric`, `Sprint3`
 
 ##### Descrição (História de Usuário)
-> **Como** tutor ou cuidador participante de uma rede de cuidado animal,  
-> **Eu quero** atualizar os dados cadastrais do meu perfil de usuário e as informações dos meus pets cadastrados (nome, idade, porte, castração e raça),  
-> **Para que** as informações de identificação e saúde estejam sempre precisas e sincronizadas para todos os cuidadores vinculados.
+> **Como** tutor participante da rede familiar de cuidado animal,  
+> **Eu quero** atualizar os dados cadastrais do meu perfil e as informações do meu Pet (nome, idade, porte, peso atual, score de bem-estar e castração),  
+> **Para que** os dados clínicos e de gamificação do animal estejam sempre atualizados para todos os cuidadores.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] O endpoint `PUT /api/Pet/{id}` deve aceitar payload com os dados atualizáveis (`Nome`, `Idade`, `Porte`, `Castrado`, `RacaId`).
-- [ ] Se o Pet não existir, o endpoint deve retornar HTTP `404 Not Found`.
-- [ ] Validações de domínio devem ser respeitadas (ex: idade entre 0 e 99 anos, nome preenchido, raça existente). Em caso de violação, retornar HTTP `400 Bad Request`.
-- [ ] O endpoint `PUT /api/Usuario/{id}` deve permitir alterar o `Nome` e `TelefoneId`, mantendo as regras de negócio de e-mail e hash seguro de senha.
-- [ ] As respostas de sucesso devem retornar HTTP `200 OK` com o DTO de resposta atualizado (`PetResponse`, `UsuarioResponse`).
-- [ ] A documentação OpenAPI/Swagger deve refletir os novos verbos `PUT` e os respectivos schemas de request/response.
+- [ ] O endpoint `PUT /api/Pet/{id}` aceita payload com dados atualizáveis (`Nome`, `Idade`, `Porte`, `PesoAtual`, `ScoreBemEstar`, `Castrado`, `RacaId`).
+- [ ] Se o Pet não existir, o endpoint retorna HTTP `404 Not Found`.
+- [ ] Validações de domínio respeitadas (idade entre 0 e 99 anos, peso positivo, nome obrigatório). Em caso de violação, retornar HTTP `400 Bad Request`.
+- [ ] O endpoint `PUT /api/Usuario/{id}` permite alterar `Nome` e `TelefoneId`, mantendo as regras de negócio de e-mail e hash seguro de senha.
+- [ ] Resposta HTTP `200 OK` com DTO atualizado (`PetResponse`, `UsuarioResponse`).
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 1.1: Atualização dos Modelos de Domínio e Invariantes (Pet & Usuario)** *(Estimativa: 2h)*
@@ -119,24 +115,24 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ---
 
-#### 🔹 [PBI-02] Implementação de Atualização (PUT) para Atendimento, Tarefa, Veterinário e Clínica
+#### 🔹 [PBI-02] Implementação de Atualização (PUT) para Atendimento, Tarefa, Clínicas 24h e Cadastros
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `[FEAT-01] Refatoração e Implementação Completa do CRUD (Operações de Update / PUT)`
 * **State:** `Approved`
-* **Priority:** `2 - High`
+* **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `DotNet`, `API`, `CRUD`, `Services`, `Sprint3`
+* **Tags:** `DotNet`, `API`, `CRUD`, `Services`, `Clinica24h`, `Sprint3`
 
 ##### Descrição (História de Usuário)
-> **Como** administrador da clínica ou médico veterinário,  
-> **Eu quero** editar os dados de atendimentos clínicos, detalhes de tarefas prescritas, cadastros de veterinários e clínicas parceiras,  
-> **Para que** qualquer erro de digitação, alteração de diagnóstico ou reagendamento de cuidado possa ser retificado no sistema.
+> **Como** administrador ou médico veterinário,  
+> **Eu quero** editar os dados de atendimentos clínicos, detalhes de tarefas da rotina do pet, e atualizar clínicas parceiras (incluindo flags de atendimento 24h e pronto-socorro),  
+> **Para que** qualquer alteração de diagnóstico ou disponibilidade de emergência seja retificada no sistema.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
 - [ ] Endpoints `PUT /api/Atendimento/{id}`, `PUT /api/Tarefa/{id}`, `PUT /api/Veterinario/{id}` e `PUT /api/Clinica/{id}` implementados e funcionais.
-- [ ] Validações de integridade referencial mantidas (verificação de existência de Foreign Keys como `ClinicaId`, `VeterinarioId`, `PetId`, `TipoAtendId`).
-- [ ] Em caso de ID inexistente, retornar status `404 Not Found`; dados inválidos devem retornar status `400 Bad Request`.
-- [ ] Retorno `200 OK` contendo o payload atualizado nas requisições bem-sucedidas.
+- [ ] Suporte a flags `Atendimento24h` e `ProntoSocorro` no DTO `ClinicaUpdateRequest`.
+- [ ] Validações de integridade referencial mantidas (`ClinicaId`, `VeterinarioId`, `PetId`, `TipoAtendId`).
+- [ ] Retorno `200 OK` com dados atualizados.
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 2.1: Criação dos DTOs de Update para Atendimento, Tarefa, Veterinário e Clínica** *(Estimativa: 2h)*
@@ -148,13 +144,11 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ---
 
-### 🌟 FEATURE 02: Monitoramento, Observabilidade e Diagnóstico da Aplicação (40 pts)
+### 🩺 FEATURE 02: Monitoramento, Observabilidade e Diagnóstico da Aplicação (40 pts)
 * **Work Item Type:** `Feature`
-* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)`
+* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-02] Monitoramento, Observabilidade e Diagnóstico da Aplicação`
 * **Description:** Implementar a infraestrutura completa de observabilidade corporativa incluindo verificação de saúde (Health Checks), registro em log estruturado correlacionado por requisição (Serilog) e rastreamento distribuído com métricas de desempenho (OpenTelemetry).
-
----
 
 #### 🔹 [PBI-03] Implementação de Health Checks Corporativos (API & Oracle Database)
 * **Work Item Type:** `Product Backlog Item`
@@ -167,25 +161,26 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 ##### Descrição (História de Usuário)
 > **Como** engenheiro de DevOps e sustentação do sistema,  
 > **Eu quero** que a API exponha endpoints padronizados de verificação de saúde (`/health`, `/health/ready`, `/health/live`),  
-> **Para que** ferramentas de monitoramento e orquestradores (como Azure App Service e Kubernetes/Docker) possam identificar instantaneamente se a aplicação e o banco Oracle estão operacionais.
+> **Para que** ferramentas de monitoramento e orquestradores em nuvem (como Azure App Service e ACI) possam identificar instantaneamente a disponibilidade da aplicação e do banco Oracle.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] Utilizar o pacote oficial `Microsoft.Extensions.Diagnostics.HealthChecks`.
-- [ ] Endpoint `/health` (ou `/healthchecks`) configurado retornando status HTTP `200 OK` (quando `Healthy`) ou `503 Service Unavailable` (quando `Unhealthy`).
-- [ ] Verificação de conectividade ativa com o banco de dados Oracle (`PetGuardianDbContext`) via EF Core Health Check ou query leve (`SELECT 1 FROM DUAL`).
-- [ ] Endpoint de Liveness (`/health/live`) para indicar que o processo da API está ativo.
-- [ ] Endpoint de Readiness (`/health/ready`) para validar a disponibilidade das dependências (Oracle DB).
-- [ ] Resposta em formato JSON estruturado com status geral, tempo de resposta (`duration`), dados de cada dependência testada e timestamp.
+- [ ] Utilização do pacote oficial `Microsoft.Extensions.Diagnostics.HealthChecks`.
+- [ ] Endpoint `/health` configurado retornando status HTTP `200 OK` (`Healthy`) ou `503 Service Unavailable` (`Unhealthy`).
+- [ ] Verificação de conectividade ativa com o banco de dados Oracle (`PetGuardianDbContext`) com tratamento de timeout.
+- [ ] Endpoints específicos:
+  - **Liveness (`/health/live`):** Indica se o processo da API está ativo e respondendo.
+  - **Readiness (`/health/ready`):** Valida a prontidão das dependências essenciais (conectividade com o banco Oracle).
+- [ ] Resposta em formato JSON estruturado com status geral, status individual de cada dependência, duração (`duration`) e timestamp.
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 3.1: Instalação de Pacotes NuGet de Health Checks** *(Estimativa: 1h)*
-  * *Descrição:* Adicionar referências aos pacotes `Microsoft.Extensions.Diagnostics.HealthChecks`, `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore` e `AspNetCore.HealthChecks.UI.Client` no projeto `PetGuardian.API`.
-* **Task 3.2: Implementação de Health Check Customizado para Oracle DB** *(Estimativa: 2h)*
-  * *Descrição:* Criar a classe `OracleDbHealthCheck` ou configurar `AddDbContextCheck<PetGuardianDbContext>()` para executar validação de conectividade com tratamento de timeout.
-* **Task 3.3: Configuração dos Endpoints e Formatador JSON de Resposta no `Program.cs`** *(Estimativa: 2h)*
-  * *Descrição:* Registrar os middlewares de HealthCheck (`/health`, `/health/ready`, `/health/live`) com `UIResponseWriter.WriteHealthCheckUIResponse` ou formatador customizado em JSON detalhado.
-* **Task 3.4: Teste de Validação dos Health Checks em Cenários de Sucesso e Falha** *(Estimativa: 1h)*
-  * *Descrição:* Executar testes manuais e automatizados simulando banco online (`Healthy`) e banco inacessível (`Unhealthy`).
+  * *Descrição:* Adicionar `Microsoft.Extensions.Diagnostics.HealthChecks`, `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore` e `AspNetCore.HealthChecks.UI.Client` no `PetGuardian.API`.
+* **Task 3.2: Implementação de Health Check para Oracle DB** *(Estimativa: 2h)*
+  * *Descrição:* Configurar `AddDbContextCheck<PetGuardianDbContext>()` ou `OracleDbHealthCheck` executando validação de conectividade leve no banco.
+* **Task 3.3: Configuração dos Endpoints e Formatador JSON no `Program.cs`** *(Estimativa: 2h)*
+  * *Descrição:* Mapear `/health`, `/health/ready` e `/health/live` com formatador JSON estruturado contendo detalhes de diagnóstico.
+* **Task 3.4: Teste de Validação dos Health Checks em Sucesso e Falha** *(Estimativa: 1h)*
+  * *Descrição:* Validar retornos 200 OK em estado normal e 503 Service Unavailable quando o banco for intencionalmente desconectado.
 
 ---
 
@@ -199,26 +194,26 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ##### Descrição (História de Usuário)
 > **Como** desenvolvedor e operador de infraestrutura,  
-> **Eu quero** que todas as operações da API gerem logs estruturados em formato JSON/Console/Arquivo e possuam um Correlation ID exclusivo por requisição,  
+> **Eu quero** logs estruturados em formato JSON/Console/Arquivo e um Correlation ID exclusivo por requisição,  
 > **Para que** eu possa rastrear todo o ciclo de vida de uma transação entre as camadas da aplicação e diagnosticar erros rapidamente em produção.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] Serilog configurado no `Program.cs` substituindo o logging padrão do .NET.
-- [ ] Suporte a múltiplos níveis de log: `Information`, `Warning` e `Error`.
-- [ ] Saída dupla configurada: Console formatado (com cores e propriedades) e Arquivo com rotação diária (`logs/petguardian-.log`).
-- [ ] Middleware customizado `CorrelationIdMiddleware` implementado para interceptar o header `X-Correlation-ID` (ou gerar um novo `Guid` caso não seja fornecido).
+- [ ] Serilog configurado no `Program.cs` substituindo o provedor de log padrão do .NET.
+- [ ] Suporte aos níveis de severidade: `Information`, `Warning` e `Error`.
+- [ ] Saída dupla configurada: Console formatado e Arquivo com rotação diária (`logs/petguardian-.log`) e retenção configurada.
+- [ ] `CorrelationIdMiddleware` implementado interceptando o cabeçalho `X-Correlation-ID` (ou gerando novo `Guid` se ausente).
 - [ ] O `CorrelationId` deve ser adicionado ao `LogContext` do Serilog e retornado no cabeçalho de resposta HTTP `X-Correlation-ID`.
-- [ ] O `GlobalExceptionHandler` deve registrar a exceção com nível `Error`, incluindo o stack trace, Correlation ID e rota da requisição.
+- [ ] O middleware de tratamento de exceções global registra falhas com nível `Error`, Correlation ID, rota e stacktrace.
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 4.1: Instalação e Configuração dos Pacotes do Serilog** *(Estimativa: 1.5h)*
-  * *Descrição:* Instalar `Serilog.AspNetCore`, `Serilog.Sinks.Console`, `Serilog.Sinks.File` e `Serilog.Enrichers.Environment`/`Thread` no `PetGuardian.API`.
+  * *Descrição:* Instalar `Serilog.AspNetCore`, `Serilog.Sinks.Console`, `Serilog.Sinks.File` e `Serilog.Enrichers.Environment`/`Thread`.
 * **Task 4.2: Implementação do Middleware de Correlação (`CorrelationIdMiddleware`)** *(Estimativa: 2h)*
-  * *Descrição:* Criar `CorrelationIdMiddleware.cs` para ler/gerar o `CorrelationId`, injetar no `LogContext.PushProperty("CorrelationId", ...)` e adicionar ao `context.Response.Headers`.
+  * *Descrição:* Criar middleware interceptando `X-Correlation-ID`, injetando no `LogContext.PushProperty` e adicionando ao response header.
 * **Task 4.3: Configuração de Sinks, Filtros e Rotação de Arquivos no `appsettings.json`** *(Estimativa: 1.5h)*
-  * *Descrição:* Definir configurações de Serilog no `appsettings.json` e `Program.cs` com rolling interval diário, retenção de arquivos e enriquecedores padrão.
-* **Task 4.4: Integração dos Logs nos Services e no `GlobalExceptionHandler`** *(Estimativa: 1h)*
-  * *Descrição:* Injetar `ILogger<T>` nos serviços essenciais (`TarefaService`, `PetService`, `AtendimentoService`) e enriquecer os logs de exceções globais.
+  * *Descrição:* Definir configurações de Serilog com rolling interval diário e formatação limpa.
+* **Task 4.4: Integração dos Logs nos Services e Tratamento Global de Exceções** *(Estimativa: 1h)*
+  * *Descrição:* Injetar `ILogger<T>` nos serviços essenciais (`TarefaService`, `PetService`, `AtendimentoService`) e enriquecer logs de falha.
 
 ---
 
@@ -237,16 +232,16 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
 - [ ] Pacotes `OpenTelemetry.Extensions.Hosting`, `OpenTelemetry.Instrumentation.AspNetCore` e `OpenTelemetry.Instrumentation.Http` configurados no projeto.
-- [ ] Distributed Tracing instrumentando requisições HTTP de entrada e chamadas de saída.
-- [ ] Métricas de desempenho expostas: tempo de resposta da requisição (`http.server.request.duration`), taxa de erros e contadores de operações.
-- [ ] Exportador configurado (Console Exporter ou OTLP/Prometheus endpoint `/metrics`).
+- [ ] Distributed Tracing instrumentando requisições HTTP de entrada e operações do Entity Framework Core.
+- [ ] Métricas de desempenho expostas: tempo de resposta da requisição (`http.server.request.duration`), taxa de erros e contadores customizados.
+- [ ] Exportador configurado (Console Exporter ou endpoint `/metrics`).
 - [ ] Spans nomeados adequadamente refletindo a operação e as camadas executadas.
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 5.1: Adição de Dependências do OpenTelemetry na API** *(Estimativa: 1.5h)*
-  * *Descrição:* Instalar pacotes NuGet do OpenTelemetry (`OpenTelemetry.Extensions.Hosting`, `OpenTelemetry.Instrumentation.AspNetCore`, `OpenTelemetry.Instrumentation.EntityFrameworkCore`, `OpenTelemetry.Exporter.Console` / `Prometheus.AspNetCore`).
+  * *Descrição:* Instalar pacotes NuGet do OpenTelemetry (`OpenTelemetry.Extensions.Hosting`, `OpenTelemetry.Instrumentation.AspNetCore`, `OpenTelemetry.Instrumentation.EntityFrameworkCore`, `OpenTelemetry.Exporter.Console`).
 * **Task 5.2: Configuração de Tracing e Métricas no Pipeline de Injeção de Dependências** *(Estimativa: 2.5h)*
-  * *Descrição:* Configurar `builder.Services.AddOpenTelemetry()` com `.WithTracing(...)` e `.WithMetrics(...)` no `Program.cs` ou extensão `ObservabilityExtensions.cs`.
+  * *Descrição:* Configurar `builder.Services.AddOpenTelemetry()` com `.WithTracing(...)` e `.WithMetrics(...)` no `Program.cs`.
 * **Task 5.3: Instrumentação Customizada de Métricas de Negócio (ActivitySource & Meter)** *(Estimativa: 2h)*
   * *Descrição:* Criar contadores customizados (`tarefas_concluidas_total`, `atendimentos_criados_total`, `erros_negocio_total`) para métricas de negócio do PetGuardian.
 * **Task 5.4: Teste e Validação da Emissão de Traces e Métricas** *(Estimativa: 1h)*
@@ -254,13 +249,11 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ---
 
-### 🌟 FEATURE 03: Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory (50 pts)
+### 🧪 FEATURE 03: Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory (50 pts)
 * **Work Item Type:** `Feature`
-* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)`
+* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-03] Testes Automatizados no Padrão AAA com xUnit e WebApplicationFactory`
 * **Description:** Implementação de suíte abrangente de testes automatizados com cobertura das camadas de Domínio e Aplicação (testes unitários com Moq) e testes de integração de ponta a ponta para os endpoints da API com WebApplicationFactory e Fixtures.
-
----
 
 #### 🔹 [PBI-06] Estruturação dos Projetos de Teste e Testes Unitários de Domínio (AAA)
 * **Work Item Type:** `Product Backlog Item`
@@ -272,25 +265,25 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ##### Descrição (História de Usuário)
 > **Como** desenvolvedor de software,  
-> **Eu quero** projetos de teste dedicados e organizados por camada com testes unitários cobrindo as entidades e regras de domínio no padrão AAA,  
-> **Para que** as invariantes de negócio (como validação de idade de pets, pontuação de tarefas e regras de cuidadores) permaneçam protegidas contra regressões.
+> **Eu quero** projetos de teste dedicados com testes unitários cobrindo as entidades e regras de domínio no padrão AAA,  
+> **Para que** as invariantes de negócio (validação de score do pet, idade, peso e regras de rotina) permaneçam protegidas contra regressões.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
 - [ ] Criação dos projetos `PetGuardian.UnitTests` e `PetGuardian.IntegrationTests` adicionados à solution `PetGuardian.sln`.
-- [ ] Todos os testes unitários devem seguir rigorosamente o padrão **AAA (Arrange, Act, Assert)** com blocos comentados.
-- [ ] Nomenclatura uniforme e padronizada em todos os testes: `MetodoTestado_Cenario_ResultadoEsperado`.
+- [ ] Todos os testes unitários seguem rigorosamente o padrão **AAA (Arrange, Act, Assert)** com blocos comentados.
+- [ ] Nomenclatura uniforme e padronizada: `MetodoTestado_Cenario_ResultadoEsperado`.
 - [ ] Cobertura completa de entidades do Domínio (`Pet`, `Usuario`, `Tarefa`, `Atendimento`, `Clinica`, `Veterinario`).
-- [ ] Testes validando fluxos de sucesso e lançamento de `DomainException` em cenários de dados inválidos (ex: pet com nome vazio, idade negativa, usuário sem e-mail válido).
+- [ ] Testes validando fluxos de sucesso e lançamento de `DomainException` em cenários de dados inválidos (ex: pet com idade negativa, nome nulo, e-mail inválido).
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 6.1: Criação e Configuração dos Projetos de Testes no .NET** *(Estimativa: 1.5h)*
-  * *Descrição:* Criar `PetGuardian.UnitTests.csproj` e `PetGuardian.IntegrationTests.csproj` com target `net10.0`, instalando `xunit`, `xunit.runner.visualstudio`, `FluentAssertions` e `Microsoft.NET.Test.Sdk`.
+  * *Descrição:* Criar `PetGuardian.UnitTests.csproj` e `PetGuardian.IntegrationTests.csproj` instalando `xunit`, `xunit.runner.visualstudio`, `FluentAssertions` e `Microsoft.NET.Test.Sdk`.
 * **Task 6.2: Implementação dos Testes Unitários da Entidade `Pet` (AAA)** *(Estimativa: 2h)*
-  * *Descrição:* Cobrir criação com dados válidos, atualização de idade, castração e lançamento de exceções para limites de caracteres e idade inválida.
+  * *Descrição:* Cobrir criação com dados válidos, atualização de idade, peso, score de bem-estar e lançamento de exceções para limites inválidos.
 * **Task 6.3: Implementação dos Testes Unitários da Entidade `Usuario` e `Tarefa` (AAA)** *(Estimativa: 2.5h)*
-  * *Descrição:* Testar validação de e-mail, senha mínima, métodos de conclusão de tarefas, atribuição de executor e transição de status.
+  * *Descrição:* Testar validação de e-mail, senha, métodos de conclusão de tarefas, atribuição de executor e transição de status.
 * **Task 6.4: Implementação dos Testes Unitários de `Atendimento`, `Veterinario` e `Clinica` (AAA)** *(Estimativa: 2h)*
-  * *Descrição:* Testar construtores, métodos de atualização de dados e validações de campos obrigatórios.
+  * *Descrição:* Testar construtores, métodos de atualização de dados e validações de campos obrigatórios e flags 24h.
 
 ---
 
@@ -305,7 +298,7 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 ##### Descrição (História de Usuário)
 > **Como** desenvolvedor de software,  
 > **Eu quero** testar os serviços da camada de aplicação (`PetService`, `TarefaService`, `UsuarioService`, `AtendimentoService`) utilizando mocks para os repositórios,  
-> **Para que** a orquestração de regras de negócio, cálculo de scores de gamificação e validações de existência sejam validadas de forma isolada e ultra-rápida.
+> **Para que** a orquestração de regras de negócio, cálculo de scores do pet e validações de existência sejam validadas de forma isolada e ultra-rápida.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
 - [ ] Uso do framework `Moq` (ou `NSubstitute`) para simulação de todos os repositórios e dependências.
@@ -313,8 +306,8 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
   * Usuário não cadastrado (`InvalidOperationException`).
   * Usuário não pertencente ao círculo de cuidadores do pet (`InvalidOperationException`).
   * Tarefa já concluída previamente (`InvalidOperationException`).
-  * Sucesso na conclusão com transição de status para `CONCLUIDO` e chamada a `Update()`.
-- [ ] Testes do método `UsuarioService.GetScore` validando o somatório de pontos das tarefas concluídas.
+  * Sucesso na conclusão com crédito de pontos no `Pet` e status `CONCLUIDO`.
+- [ ] Testes do método `PetService.GetScore` validando o somatório de pontos e nível de saúde do Pet.
 - [ ] Testes dos métodos de `Create`, `Update`, `GetById` e `Delete` de todos os serviços.
 
 ##### Tarefas Técnicas (Child Tasks)
@@ -322,10 +315,10 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
   * *Descrição:* Configurar pacote `Moq` no projeto de testes e criar métodos utilitários/Builders para criação rápida de instâncias de teste.
 * **Task 7.2: Implementação de Testes Unitários para `TarefaService` (Cenários Críticos)** *(Estimativa: 2.5h)*
   * *Descrição:* Testar todos os ramos de decisão do método `Concluir`, criação de tarefas com verificação de existência de Pet e Veterinário, e filtros de busca.
-* **Task 7.3: Implementação de Testes Unitários para `UsuarioService` e Gamificação/Score** *(Estimativa: 2h)*
-  * *Descrição:* Testar fluxos de cadastro de usuário, unicidade/busca por e-mail e cálculo do score cumulativo individual.
-* **Task 7.4: Implementação de Testes Unitários para `PetService` e `AtendimentoService`** *(Estimativa: 2h)*
-  * *Descrição:* Testar operações de CRUD, listagens por raça, histórico clínico consolidado e tratamento de entidades não encontradas.
+* **Task 7.3: Implementação de Testes Unitários para `PetService` e Score/Gamificação** *(Estimativa: 2h)*
+  * *Descrição:* Testar fluxos de cadastro de pets, atualização de score de bem-estar e cálculo do nível de saúde.
+* **Task 7.4: Implementação de Testes Unitários para `UsuarioService`, `ClinicaService` e `AtendimentoService`** *(Estimativa: 2h)*
+  * *Descrição:* Testar operações de CRUD, listagens, histórico clínico consolidado e tratamento de entidades não encontradas.
 
 ---
 
@@ -344,36 +337,33 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
 - [ ] Projeto `PetGuardian.IntegrationTests` configurado com `Microsoft.AspNetCore.Mvc.Testing` (`WebApplicationFactory<Program>`).
-- [ ] Implementação de `CustomWebApplicationFactory` substituindo a conexão Oracle física por um banco em memória (`UseInMemoryDatabase` ou SQLite) para execução isolada e confiável.
-- [ ] Uso de **Fixtures** e **Collection Fixtures** (`IClassFixture`, `ICollectionFixture`) para inicialização única e compartilhamento de contexto/HttpClient entre testes.
+- [ ] Implementação de `CustomWebApplicationFactory` com banco em memória (`UseInMemoryDatabase` ou SQLite) para execução isolada e confiável sem dependência de banco físico externo.
+- [ ] Uso de **Fixtures** e **Collection Fixtures** (`IClassFixture`, `ICollectionFixture`) para compartilhamento otimizado de contexto.
 - [ ] Testes de integração cobrindo o fluxo completo:
-  * `POST /api/Pet` com retorno `201 Created` e header `Location`.
-  * `GET /api/Pet/{id}` com retorno `200 OK` e `404 Not Found`.
-  * `PUT /api/Pet/{id}` com atualização persistida com sucesso (`200 OK`).
-  * `DELETE /api/Pet/{id}` com retorno `204 NoContent`.
-  * `POST /api/Tarefa/{id}/concluir` validando o fluxo de conclusão de tarefas.
-  * Validação do `GlobalExceptionHandler` retornando RFC 7807 (`ProblemDetails`) em casos de erro.
-- [ ] Validação de que todos os testes rodam com sucesso via comando `dotnet test`.
+  * `POST /api/Pet` com retorno `201 Created` e header `Location`;
+  * `PUT /api/Pet/{id}` com retorno `200 OK`;
+  * `GET /api/Pet/{id}` com retorno `200 OK` e `404 Not Found` para IDs inexistentes;
+  * `DELETE /api/Pet/{id}` com retorno `204 No Content`;
+  * `POST /api/Tarefa` e `PUT /api/Tarefa/{id}/concluir`;
+  * Validação de respostas `400 Bad Request` para payloads inválidos (`ProblemDetails`).
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 8.1: Configuração da `CustomWebApplicationFactory` e Banco In-Memory** *(Estimativa: 2.5h)*
-  * *Descrição:* Criar a classe `CustomWebApplicationFactory<TProgram>` customizando `ConfigureServices` para usar `InMemoryDbContext` e semear dados básicos (status, raças, tipos de atendimento).
+  * *Descrição:* Criar a classe `CustomWebApplicationFactory<TProgram>` customizando `ConfigureServices` para usar `InMemoryDbContext` e semear dados básicos.
 * **Task 8.2: Criação de Test Fixtures e Coleções do xUnit** *(Estimativa: 2h)*
-  * *Descrição:* Criar classes de Fixture (`IntegrationTestFixture`, `DatabaseFixture`) e anotação `[CollectionDefinition("IntegrationTests")]` para reutilização otimizada.
+  * *Descrição:* Criar classes de Fixture (`IntegrationTestFixture`, `DatabaseFixture`) e anotação `[CollectionDefinition("IntegrationTests")]`.
 * **Task 8.3: Implementação dos Testes de Integração de `PetController` e `UsuarioController`** *(Estimativa: 2.5h)*
   * *Descrição:* Testar endpoints de CRUD completo (POST, GET, PUT, DELETE), validando status codes e corpo da resposta JSON.
 * **Task 8.4: Implementação dos Testes de Integração de `TarefaController`, `AtendimentoController` e Erros Globais** *(Estimativa: 3h)*
-  * *Descrição:* Testar fluxos de conclusão de tarefa, listagens com relacionamentos e validação de `ProblemDetails` para requisições com dados inválidos (400) e não encontradas (404).
+  * *Descrição:* Testar fluxos de conclusão de tarefa, listagens com relacionamentos e validação de `ProblemDetails` para dados inválidos (400) e não encontrados (404).
 
 ---
 
-### 🌟 FEATURE 04: Documentação Técnica, Guias de Execução e Atualização do README (10 pts)
+### 📑 FEATURE 04: Documentação Técnica, Guias de Execução e Atualização do README (10 pts)
 * **Work Item Type:** `Feature`
-* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Colaborativo (Sprint 3)`
+* **Parent:** `[EPIC-01] PetGuardian - Plataforma .NET de Cuidado Animal Pet-Centric (Sprint 3)`
 * **Title:** `[FEAT-04] Documentação Técnica, Guias de Execução e Atualização do README`
-* **Description:** Atualizar toda a documentação do repositório para refletir a nova arquitetura de observabilidade, catálogo de endpoints de Health Check, novos endpoints de Update do CRUD e instruções passo a passo para execução da suíte de testes automatizados via CLI.
-
----
+* **Description:** Estruturação e publicação da documentação técnica no README.md, incluindo instruções de build, execução de testes unitários/integração, visualização de Health Checks e endpoints OpenAPI/Swagger.
 
 #### 🔹 [PBI-09] Atualização da Documentação Técnica (README.md, Health Checks, Testes e OpenAPI)
 * **Work Item Type:** `Product Backlog Item`
@@ -381,60 +371,29 @@ Após auditoria detalhada dos requisitos do edital da **Sprint 3 (Páginas 07 e 
 * **State:** `Approved`
 * **Priority:** `2 - High`
 * **Effort (Story Points):** `2`
-* **Tags:** `Documentation`, `README`, `HealthChecks`, `xUnit`, `Sprint3`
+* **Tags:** `DotNet`, `Documentation`, `README`, `OpenAPI`, `Sprint3`
 
 ##### Descrição (História de Usuário)
-> **Como** professor avaliador e desenvolvedor novato no projeto,  
-> **Eu quero** um README.md completo com explicações das novas ferramentas de monitoramento, tabela de endpoints e comandos CLI para execução dos testes automatizados,  
-> **Para que** eu possa avaliar, executar e testar a aplicação de maneira imediata e sem atritos.
+> **Como** professor avaliador e desenvolvedor da equipe,  
+> **Eu quero** um README.md completo e detalhado no repositório GitHub,  
+> **Para que** qualquer pessoa consiga clonar o repositório, executar a suíte de testes automatizados (`dotnet test`), inspecionar os endpoints no Swagger e validar os Health Checks da API.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] Seção detalhada no `README.md` documentando os endpoints de Health Check (`/health`, `/health/ready`, `/health/live`) com payloads de exemplo.
-- [ ] Documentação do Logging Estruturado (Serilog) e como consultar logs em arquivo e console.
-- [ ] Documentação do OpenTelemetry (Distributed Tracing e Métricas expostas).
-- [ ] Instruções claras e executáveis para rodar os testes unitários e de integração (`dotnet test`, `dotnet test --logger "console;verbosity=detailed"`).
-- [ ] Atualização da tabela de endpoints da API no README incluindo as novas rotas `PUT` implementadas.
-- [ ] Verificação de integridade dos links de repositório e integrantes.
+- [ ] Seção detalhada sobre a arquitetura da solução (Domain-Driven Design simplificado em 4 camadas).
+- [ ] Comandos para restaurar dependências, compilar e executar a API (`dotnet run --project PetGuardian.API`).
+- [ ] Instruções para execução dos testes unitários e de integração (`dotnet test --verbosity normal`).
+- [ ] Documentação dos endpoints de Observabilidade (`/health`, `/health/ready`, `/health/live`, `/metrics`).
+- [ ] Instruções de acesso ao Swagger UI (`/swagger/index.html`).
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 9.1: Redação das Seções de Observabilidade e Health Checks no README** *(Estimativa: 1h)*
-  * *Descrição:* Descrever arquitetura de monitoramento, dependências monitoradas e exemplos de saída JSON dos endpoints de saúde.
-* **Task 9.2: Redação do Guia de Execução de Testes Automatizados no README** *(Estimativa: 1h)*
-  * *Descrição:* Incluir comandos do CLI `dotnet test`, explicação da estrutura de projetos (Unit e Integration) e padrão AAA com Fixtures.
-* **Task 9.3: Atualização do Catálogo de Endpoints e Diagramas de Arquitetura** *(Estimativa: 1h)*
-  * *Descrição:* Atualizar a listagem de endpoints RESTful com os métodos `PUT` e os links de documentação Swagger.
+* **Task 9.1: Redação do Guia de Execução, Arquitetura e Observabilidade no `README.md`** *(Estimativa: 1.5h)*
+* **Task 9.2: Documentação de Comandos de Testes Automatizados e Evidências** *(Estimativa: 1.5h)*
 
 ---
 
-## 🎯 5. Plano de Entrega e Sequência de Implementação Recomendada
+## 🚀 5. Ordem Recomendada de Execução (Sprint Roadmap)
 
-Para garantir um fluxo ágil e sem retrabalho, a implementação deve seguir a seguinte ordem de dependência técnica:
-
-```mermaid
-graph TD
-    A[PBI-01 & PBI-02: Implementação do UPDATE no Domínio, DTOs, Services e Controllers] --> B[PBI-04: Logging Estruturado Serilog & Middleware Correlation ID]
-    B --> C[PBI-03: Health Checks com Microsoft.Extensions.Diagnostics]
-    C --> D[PBI-05: OpenTelemetry Distributed Tracing & Métricas]
-    A --> E[PBI-06: Estruturação dos Projetos de Teste & Testes Unitários de Domínio]
-    E --> F[PBI-07: Testes Unitários de Aplicação com Moq]
-    F --> G[PBI-08: Testes de Integração com WebApplicationFactory & Fixtures]
-    D --> H[PBI-09: Atualização Completa do README.md e Documentação Técnica]
-    G --> H
-```
-
----
-
-## 📋 6. Checklist de Conformidade com a Grade de Avaliação FIAP (100 Pts)
-
-* [x] **1. Monitoramento e Observabilidade (40 pts)**
-  * [x] Health Checks de API, Banco Oracle e Dependências com `Microsoft.Extensions.Diagnostics.HealthChecks` *(15 pts)* ➔ **PBI-03**
-  * [x] Logging Estruturado com Serilog (Info, Warning, Error), Console/Arquivo e Correlation ID *(10 pts)* ➔ **PBI-04**
-  * [x] Distributed Tracing e Métricas com OpenTelemetry / Application Insights *(15 pts)* ➔ **PBI-05**
-* [x] **2. Testes Automatizados – Padrão AAA (50 pts)**
-  * [x] Testes Unitários com xUnit + Moq nas camadas de Domínio e Aplicação com padrão AAA *(20 pts)* ➔ **PBI-06 e PBI-07**
-  * [x] Testes de Integração de endpoints com `WebApplicationFactory` *(15 pts)* ➔ **PBI-08**
-  * [x] Organização por camadas (Unit/Integration), nomenclatura padronizada e Fixtures de contexto *(15 pts)* ➔ **PBI-06, PBI-07 e PBI-08**
-* [x] **3. Atualização do README (10 pts)**
-  * [x] Documentação de Health Checks, comandos `dotnet test` e descrição geral atualizada *(10 pts)* ➔ **PBI-09**
-* [x] **Requisito Transversal & Alinhamento DevOps:**
-  * [x] Implementação de `PUT` (Update) em todas as entidades core garantindo CRUD completo de ponta a ponta ➔ **PBI-01 e PBI-02**
+1. **Fase 1 — Refatoração e Operações de Update (`PUT`):** Executar `PBI-01` e `PBI-02`. Consolidar o CRUD completo no banco Oracle com as entidades Pet-Centric.
+2. **Fase 2 — Camada de Observabilidade & Monitoramento (40 pts):** Executar `PBI-03` (Health Checks), `PBI-04` (Serilog + Correlation ID) e `PBI-05` (OpenTelemetry Tracing/Metrics).
+3. **Fase 3 — Suíte de Testes Automatizados AAA (50 pts):** Executar `PBI-06` (Testes de Domínio), `PBI-07` (Testes de Aplicação com Moq) e `PBI-08` (Testes de Integração com WebApplicationFactory & Fixtures).
+4. **Fase 4 — Documentação e Evidências (10 pts):** Executar `PBI-09` (README.md, Swagger e roteiro de execução).
