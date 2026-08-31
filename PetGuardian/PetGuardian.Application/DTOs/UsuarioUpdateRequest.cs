@@ -1,16 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using PetGuardian.Domain.Entities;
 using PetGuardian.Domain.Enums;
 
 namespace PetGuardian.Application.DTOs;
 
-/// <summary>Ganhou Role (COMUM/PREMIUM); senha aceita até 60 caracteres.</summary>
-public record UsuarioRequest(
+/// <summary>Corpo do PUT de usuário. TelefoneId não é reatribuível por aqui.</summary>
+public record UsuarioUpdateRequest(
     [Required][StringLength(100, MinimumLength = 2)] string Nome,
     [Required][EmailAddress][StringLength(50)] string Email,
     [Required][StringLength(60, MinimumLength = 6)] string Senha,
-    [Required] RoleUsuario Role,
-    [Required] Guid TelefoneId)
-{
-    public Usuario ToDomain() => new(Nome, Email, Senha, Role, TelefoneId);
-}
+    [Required] RoleUsuario Role
+);
