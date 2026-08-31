@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using PetGuardian.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PetGuardian.Infrastructure.Persistence;
 namespace PetGuardian.Infrastructure.Migrations
 {
     [DbContext(typeof(PetGuardianContext))]
-    partial class PetGuardianContextModelSnapshot : ModelSnapshot
+    [Migration("20260830005248_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
