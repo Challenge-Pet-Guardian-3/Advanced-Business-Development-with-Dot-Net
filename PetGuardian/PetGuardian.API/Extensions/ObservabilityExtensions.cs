@@ -1,9 +1,10 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PetGuardian.API.Health;
 using PetGuardian.API.HealthChecks;
 using PetGuardian.API.Middleware;
 using PetGuardian.Infrastructure.Persistence;
@@ -62,45 +63,23 @@ public static class ObservabilityExtensions
         // /health -> visão geral (usada por orquestradores simples)
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
-            ResponseWriter = WriteHealthCheckResponse
+            ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
         });
 
         // /health/ready -> só os checks marcados como "ready" (banco + serviços externos)
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("ready"),
-            ResponseWriter = WriteHealthCheckResponse
+            ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
         });
 
         // /health/live -> liveness simples, sem dependências externas
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
             Predicate = _ => false,
-            ResponseWriter = WriteHealthCheckResponse
+            ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
         });
 
         return app;
-    }
-
-    private static Task WriteHealthCheckResponse(HttpContext context, HealthReport report)
-    {
-        context.Response.ContentType = "application/json";
-
-        var payload = new
-        {
-            status = report.Status.ToString(),
-            totalDurationMs = report.TotalDuration.TotalMilliseconds,
-            checks = report.Entries.Select(e => new
-            {
-                name = e.Key,
-                status = e.Value.Status.ToString(),
-                description = e.Value.Description,
-                durationMs = e.Value.Duration.TotalMilliseconds,
-                error = e.Value.Exception?.Message
-            })
-        };
-
-        return context.Response.WriteAsync(JsonSerializer.Serialize(payload,
-            new JsonSerializerOptions { WriteIndented = true }));
     }
 }

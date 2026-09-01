@@ -8,9 +8,7 @@ using PetGuardian.Infrastructure.Persistence.Repositories;
 namespace PetGuardian.API.Extensions;
 
 /// <summary>
-/// Extensões para registrar persistência e repositórios da solução PetGuardian na injeção de dependências.
-/// registros de Atendimento/Clinica/TipoAtend/Veterinario removidos;
-/// adicionados Trilha/Modulo/Aula/Historico.
+/// Extensões para registrar persistência, repositórios e serviços da solução PetGuardian na injeção de dependências.
 /// </summary>
 public static class PetGuardianServiceCollectionExtensions
 {
@@ -49,9 +47,15 @@ public static class PetGuardianServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>Adiciona serviços que orquestram repositórios.</summary>
+    /// <summary>Adiciona serviços que orquestram regras de negócio e integrações externas.</summary>
     public static IServiceCollection AddPetGuardianApplicationServices(this IServiceCollection services)
     {
+        // Integração externa
+        services.AddHttpClient<IViaCepService, ViaCepService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(5);
+        });
+
         // Hierarquia de endereço
         services.AddScoped<IEstadoService,   EstadoService>();
         services.AddScoped<ICidadeService,   CidadeService>();
