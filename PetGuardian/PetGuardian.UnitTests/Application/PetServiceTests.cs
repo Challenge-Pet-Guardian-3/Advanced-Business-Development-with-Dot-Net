@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -16,9 +17,10 @@ public class PetServiceTests(TestFixture fixture)
     private readonly Mock<IRepository<Raca>> _racaRepoMock = new();
     private readonly Mock<ITarefaRepository> _tarefaRepoMock = new();
     private readonly Mock<IHistoricoRepository> _historicoRepoMock = new();
+    private readonly Mock<ILogger<PetService>> _loggerMock = new();
 
     private PetService CreateService() =>
-        new(_petRepoMock.Object, _racaRepoMock.Object, _tarefaRepoMock.Object, _historicoRepoMock.Object);
+        new(_petRepoMock.Object, _racaRepoMock.Object, _tarefaRepoMock.Object, _historicoRepoMock.Object, _loggerMock.Object);
 
     [Fact]
     public void Create_RacaExistente_DevePersistirECriarPet()

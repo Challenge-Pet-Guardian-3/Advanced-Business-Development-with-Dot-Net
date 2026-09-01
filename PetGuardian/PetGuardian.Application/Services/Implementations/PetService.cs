@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
@@ -6,33 +7,47 @@ using PetGuardian.Domain.Entities;
 namespace PetGuardian.Application.Services.Implementations;
 
 /// <summary>
-/// IAtendimentoRepository removido (Atendimento não existe mais); GetHistorico agora combina
-/// Historico + Tarefas concluídas. Adicionado Update.
+/// Serviço de aplicação responsável pelo gerenciamento de pets, histórico integrado e linha do tempo de cuidados.
 /// </summary>
 public sealed class PetService(
-    IPetRepository       petRepository,
-    IRepository<Raca>    racaRepository,
-    ITarefaRepository    tarefaRepository,
-    IHistoricoRepository historicoRepository) : IPetService
+    IPetRepository        petRepository,
+    IRepository<Raca>     racaRepository,
+    ITarefaRepository     tarefaRepository,
+    IHistoricoRepository  historicoRepository,
+    ILogger<PetService>   logger) : IPetService
 {
-    public IReadOnlyList<PetResponse> GetAll() =>
-        petRepository.GetAll().Select(PetResponse.FromDomain).ToList();
+    public IReadOnlyList<PetResponse> GetAll()
+    {
+        logger.LogInformation("Buscando todos os pets cadastrados.");
+        return petRepository.GetAll().Select(PetResponse.FromDomain).ToList();
+    }
 
     public PetResponse? GetById(Guid id)
     {
+        logger.LogInformation("Buscando pet por ID: {PetId}", id);
         var pet = petRepository.GetById(id);
+        if (pet is null)
+            logger.LogWarning("Pet com ID {PetId} não encontrado.", id);
+
         return pet is null ? null : PetResponse.FromDomain(pet);
     }
 
-    public IReadOnlyList<PetResponse> GetByRacaId(Guid racaId) =>
-        petRepository.GetByRacaId(racaId)
+    public IReadOnlyList<PetResponse> GetByRacaId(Guid racaId)
+    {
+        logger.LogInformation("Buscando pets por raça: {RacaId}", racaId);
+        return petRepository.GetByRacaId(racaId)
             .Select(PetResponse.FromDomain)
             .ToList();
+    }
 
     public IReadOnlyList<PetHistoricoItemResponse> GetHistorico(Guid petId)
     {
+        logger.LogInformation("Buscando linha do tempo histórica do pet: {PetId}", petId);
         if (!petRepository.ExistsById(petId))
+        {
+            logger.LogWarning("Tentativa de obter histórico de pet inexistente: {PetId}", petId);
             throw new InvalidOperationException("Pet não encontrado.");
+        }
 
         var historico = new List<PetHistoricoItemResponse>();
 
@@ -59,33 +74,62 @@ public sealed class PetService(
                 t.UsuarioId,
                 t.PontosTarefa)));
 
-        return historico
+        var historicoOrdenado = historico
             .OrderByDescending(i => i.DataEvento)
             .ToList();
+
+        logger.LogInformation("Linha do tempo consolidada para o pet {PetId}: {TotalEventos} eventos.", petId, historicoOrdenado.Count);
+        return historicoOrdenado;
     }
 
     public PetResponse Create(PetRequest request)
     {
+        logger.LogInformation("Iniciando cadastro do pet {Nome}, Raça: {RacaId}, Porte: {Porte}, Sexo: {Sexo}",
+            request.Nome, request.RacaId, request.Porte, request.Sexo);
+
         if (!racaRepository.ExistsById(request.RacaId))
+        {
+            logger.LogWarning("Tentativa de cadastrar pet com raça inexistente: {RacaId}", request.RacaId);
             throw new InvalidOperationException("Raça não encontrada.");
+        }
 
         var pet = request.ToDomain();
         petRepository.Add(pet);
+        logger.LogInformation("Pet {PetId} ({Nome}) cadastrado com sucesso.", pet.Id, pet.Nome);
         return PetResponse.FromDomain(pet);
     }
     
     public PetResponse? Update(Guid id, PetRequest request)
     {
+        logger.LogInformation("Iniciando atualização do pet: {PetId}", id);
         var pet = petRepository.GetById(id);
-        if (pet is null) return null;
+        if (pet is null)
+        {
+            logger.LogWarning("Tentativa de atualizar pet inexistente: {PetId}", id);
+            return null;
+        }
 
         if (!racaRepository.ExistsById(request.RacaId))
+        {
+            logger.LogWarning("Tentativa de atualizar pet com raça inexistente: {RacaId}", request.RacaId);
             throw new InvalidOperationException("Raça não encontrada.");
+        }
 
         pet.Atualizar(request.Nome, request.DataNascimento, request.Sexo, request.Porte, request.Castrado, request.RacaId);
         petRepository.Update(pet);
+        logger.LogInformation("Pet {PetId} ({Nome}) atualizado com sucesso.", id, pet.Nome);
         return PetResponse.FromDomain(pet);
     }
 
-    public bool Delete(Guid id) => petRepository.Delete(id);
+    public bool Delete(Guid id)
+    {
+        logger.LogInformation("Iniciando exclusão de pet: {PetId}", id);
+        var removido = petRepository.Delete(id);
+        if (removido)
+            logger.LogInformation("Pet {PetId} removido com sucesso.", id);
+        else
+            logger.LogWarning("Tentativa de exclusão de pet inexistente: {PetId}", id);
+
+        return removido;
+    }
 }

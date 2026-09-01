@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -17,7 +18,8 @@ public class GamificacaoServicesTests(TestFixture fixture)
         // Arrange
         var aulaRepoMock = new Mock<IAulaRepository>();
         var moduloRepoMock = new Mock<IModuloRepository>();
-        var service = new AulaService(aulaRepoMock.Object, moduloRepoMock.Object);
+        var loggerMock = new Mock<ILogger<AulaService>>();
+        var service = new AulaService(aulaRepoMock.Object, moduloRepoMock.Object, loggerMock.Object);
 
         var moduloId = Guid.NewGuid();
         var request = new AulaRequest("Aula 1", "Descricao", 15, "Medio", "Conteudo", false, moduloId);
@@ -40,7 +42,8 @@ public class GamificacaoServicesTests(TestFixture fixture)
         // Arrange
         var moduloRepoMock = new Mock<IModuloRepository>();
         var trilhaRepoMock = new Mock<ITrilhaRepository>();
-        var service = new ModuloService(moduloRepoMock.Object, trilhaRepoMock.Object);
+        var loggerMock = new Mock<ILogger<ModuloService>>();
+        var service = new ModuloService(moduloRepoMock.Object, trilhaRepoMock.Object, loggerMock.Object);
 
         var modulo = fixture.CriarModuloValido();
         var updateRequest = new ModuloUpdateRequest("Modulo Editado", "5 horas", "Nova Desc");
@@ -63,7 +66,8 @@ public class GamificacaoServicesTests(TestFixture fixture)
         // Arrange
         var trilhaRepoMock = new Mock<ITrilhaRepository>();
         var petRepoMock = new Mock<IPetRepository>();
-        var service = new TrilhaService(trilhaRepoMock.Object, petRepoMock.Object);
+        var loggerMock = new Mock<ILogger<TrilhaService>>();
+        var service = new TrilhaService(trilhaRepoMock.Object, petRepoMock.Object, loggerMock.Object);
 
         var petId = Guid.NewGuid();
         var request = new TrilhaRequest("Trilha Filhote", "Cuidados iniciais", petId);
@@ -86,7 +90,8 @@ public class GamificacaoServicesTests(TestFixture fixture)
         // Arrange
         var histRepoMock = new Mock<IHistoricoRepository>();
         var petRepoMock = new Mock<IPetRepository>();
-        var service = new HistoricoService(histRepoMock.Object, petRepoMock.Object);
+        var loggerMock = new Mock<ILogger<HistoricoService>>();
+        var service = new HistoricoService(histRepoMock.Object, petRepoMock.Object, loggerMock.Object);
 
         var petId = Guid.NewGuid();
         var request = new HistoricoRequest("CONSULTA", DateTime.UtcNow, petId);

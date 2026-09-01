@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -14,12 +15,14 @@ public class BairroAndCidadeServiceTests
     private readonly Mock<IRepository<Bairro>> _bairroRepoMock = new();
     private readonly Mock<IRepository<Cidade>> _cidadeRepoMock = new();
     private readonly Mock<IRepository<Estado>> _estadoRepoMock = new();
+    private readonly Mock<ILogger<BairroService>> _bairroLoggerMock = new();
+    private readonly Mock<ILogger<CidadeService>> _cidadeLoggerMock = new();
 
     [Fact]
     public void BairroService_GetByCidadeId_DeveUsarFindERetornarLista()
     {
         // Arrange
-        var service = new BairroService(_bairroRepoMock.Object, _cidadeRepoMock.Object);
+        var service = new BairroService(_bairroRepoMock.Object, _cidadeRepoMock.Object, _bairroLoggerMock.Object);
         var cidadeId = Guid.NewGuid();
         var bairro = new Bairro("Pinheiros", cidadeId);
 
@@ -39,7 +42,7 @@ public class BairroAndCidadeServiceTests
     public void CidadeService_GetByEstadoId_DeveUsarFindERetornarLista()
     {
         // Arrange
-        var service = new CidadeService(_cidadeRepoMock.Object, _estadoRepoMock.Object);
+        var service = new CidadeService(_cidadeRepoMock.Object, _estadoRepoMock.Object, _cidadeLoggerMock.Object);
         var estadoId = Guid.NewGuid();
         var cidade = new Cidade("Campinas", estadoId);
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -17,13 +18,15 @@ public class EnderecoServiceTests
     private readonly Mock<IRepository<Cidade>> _cidadeRepoMock = new();
     private readonly Mock<IRepository<Estado>> _estadoRepoMock = new();
     private readonly Mock<IViaCepService> _viaCepMock = new();
+    private readonly Mock<ILogger<EnderecoService>> _loggerMock = new();
 
     private EnderecoService CreateService() =>
         new(_enderecoRepoMock.Object,
             _bairroRepoMock.Object,
             _cidadeRepoMock.Object,
             _estadoRepoMock.Object,
-            _viaCepMock.Object);
+            _viaCepMock.Object,
+            _loggerMock.Object);
 
     [Fact]
     public void Create_CepValido_DeveResolverViaCepEPersistirEndereco()

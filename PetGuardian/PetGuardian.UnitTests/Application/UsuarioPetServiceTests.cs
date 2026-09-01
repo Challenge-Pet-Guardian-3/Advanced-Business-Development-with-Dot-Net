@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -17,13 +18,15 @@ public class UsuarioPetServiceTests
     private readonly Mock<IPetRepository> _petRepoMock = new();
     private readonly Mock<ITarefaRepository> _tarefaRepoMock = new();
     private readonly Mock<IHistoricoRepository> _historicoRepoMock = new();
+    private readonly Mock<ILogger<UsuarioPetService>> _loggerMock = new();
 
     private UsuarioPetService CreateService() =>
         new(_usuarioPetRepoMock.Object,
             _usuarioRepoMock.Object,
             _petRepoMock.Object,
             _tarefaRepoMock.Object,
-            _historicoRepoMock.Object);
+            _historicoRepoMock.Object,
+            _loggerMock.Object);
 
     [Fact]
     public void InviteByUsuario_AdminValidoEConvidadoNaoVinculado_DeveCriarVinculoComoCoCuidador()

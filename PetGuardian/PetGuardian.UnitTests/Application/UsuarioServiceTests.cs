@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -15,9 +16,10 @@ public class UsuarioServiceTests(TestFixture fixture)
     private readonly Mock<IUsuarioRepository> _usuarioRepoMock = new();
     private readonly Mock<IRepository<Telefone>> _telefoneRepoMock = new();
     private readonly Mock<ITarefaRepository> _tarefaRepoMock = new();
+    private readonly Mock<ILogger<UsuarioService>> _loggerMock = new();
 
     private UsuarioService CreateService() =>
-        new(_usuarioRepoMock.Object, _telefoneRepoMock.Object, _tarefaRepoMock.Object);
+        new(_usuarioRepoMock.Object, _telefoneRepoMock.Object, _tarefaRepoMock.Object, _loggerMock.Object);
 
     [Fact]
     public void Create_EmailNovoETelefoneExistente_DeveCriarUsuario()

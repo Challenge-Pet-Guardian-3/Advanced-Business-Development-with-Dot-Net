@@ -114,8 +114,10 @@ public sealed class Usuario : BaseEntity
 * **Repositório Genérico vs. Repositórios Específicos:**
   * `IRepository<T>` define operações fundamentais: `GetAll()`, `GetById(id)`, `Find(predicate)`, `FirstOrDefault(predicate)`, `Add(entity)`, `Update(entity)`, `Delete(id)`, `ExistsById(id)`, `Exists(predicate)`.
   * Repositórios específicos (`IPetRepository`, `IUsuarioRepository`, `ITarefaRepository`, `IUsuarioPetRepository`) adicionam consultas de domínio indexadas e otimizadas (`GetByEmail`, `GetByRacaId`, `GetByUsuarioAndPet`).
-* **Serviços de Aplicação & Otimização de Consultas (Anti-N+1):**
+* **Serviços de Aplicação & Logging Estruturado Semântico:**
   * Classes `public sealed class ...Service(...) : I...Service` utilizando **Primary Constructors** do C# 12+.
+  * Injeção de `ILogger<TService>` em todos os serviços de aplicação com registro semântico de mutações (`LogInformation`) e avisos de validação de negócio (`LogWarning`) antes de lançar exceções.
+  * Sanitização rigorosa: senhas brutas, hashes e dados sensíveis nunca são impressos nos logs.
   * Pré-validação de integridade referencial antes de invocar persistência (evita exceções de FK não tratadas no banco).
   * Uso de consultas batch no repositório com expressões lambda (ex: `petRepository.Find(p => petIds.Contains(p.Id))`), eliminando roundtrips repetitivos dentro de loops.
 * **Padrão Factory Method / Strategy (OCP):**

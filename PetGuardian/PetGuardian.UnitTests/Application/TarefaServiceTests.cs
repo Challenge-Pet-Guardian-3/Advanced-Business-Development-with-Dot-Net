@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
@@ -17,6 +18,7 @@ public class TarefaServiceTests(TestFixture fixture)
     private readonly Mock<IUsuarioRepository> _usuarioRepoMock = new();
     private readonly Mock<IUsuarioPetRepository> _usuarioPetRepoMock = new();
     private readonly Mock<IHistoricoRepository> _historicoRepoMock = new();
+    private readonly Mock<ILogger<TarefaService>> _loggerMock = new();
 
     private TarefaService CreateService() =>
         new(_tarefaRepoMock.Object,
@@ -24,7 +26,8 @@ public class TarefaServiceTests(TestFixture fixture)
             _statusRepoMock.Object,
             _usuarioRepoMock.Object,
             _usuarioPetRepoMock.Object,
-            _historicoRepoMock.Object);
+            _historicoRepoMock.Object,
+            _loggerMock.Object);
 
     [Fact]
     public void Create_DadosValidosECuidadorVinculado_DeveCriarTarefaComStatusPendente()

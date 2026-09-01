@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
@@ -6,51 +7,80 @@ using PetGuardian.Domain.Entities;
 namespace PetGuardian.Application.Services.Implementations;
 
 /// <summary>
-/// Serviço de orquestração de endereços com resolução automática via IViaCepService.
+/// Serviço de orquestração de endereços com resolução automática via IViaCepService e logging estruturado.
 /// </summary>
 public sealed class EnderecoService(
-    IRepository<Endereco> enderecoRepository,
-    IRepository<Bairro>   bairroRepository,
-    IRepository<Cidade>   cidadeRepository,
-    IRepository<Estado>   estadoRepository,
-    IViaCepService        viaCepService) : IEnderecoService
+    IRepository<Endereco>     enderecoRepository,
+    IRepository<Bairro>       bairroRepository,
+    IRepository<Cidade>       cidadeRepository,
+    IRepository<Estado>       estadoRepository,
+    IViaCepService            viaCepService,
+    ILogger<EnderecoService>  logger) : IEnderecoService
 {
-    public IReadOnlyList<EnderecoResponse> GetAll() =>
-        enderecoRepository.GetAll().Select(EnderecoResponse.FromDomain).ToList();
+    public IReadOnlyList<EnderecoResponse> GetAll()
+    {
+        logger.LogInformation("Buscando todos os endereços cadastrados.");
+        return enderecoRepository.GetAll().Select(EnderecoResponse.FromDomain).ToList();
+    }
 
     public EnderecoResponse? GetById(Guid id)
     {
+        logger.LogInformation("Buscando endereço por ID: {EnderecoId}", id);
         var e = enderecoRepository.GetById(id);
+        if (e is null)
+            logger.LogWarning("Endereço com ID {EnderecoId} não encontrado.", id);
+
         return e is null ? null : EnderecoResponse.FromDomain(e);
     }
 
     public EnderecoResponse Create(EnderecoRequest request)
     {
+        logger.LogInformation("Iniciando criação de endereço para CEP: {Cep}, Número: {Numero}", request.Cep, request.Numero);
         var resolved = ResolveAddress(request.Cep);
         var endereco = FindOrCreateByCepAndNumero(request.Cep, request.Numero, resolved.Rua, resolved.Bairro.Id);
+        logger.LogInformation("Endereço {EnderecoId} cadastrado/resolvido com sucesso para o CEP: {Cep}", endereco.Id, request.Cep);
         return EnderecoResponse.FromDomain(endereco);
     }
 
-    /// <summary>Re-resolve o CEP e atualiza rua/bairro/número do endereço existente.</summary>
     public EnderecoResponse? Update(Guid id, EnderecoRequest request)
     {
+        logger.LogInformation("Iniciando atualização do endereço: {EnderecoId}", id);
         var endereco = enderecoRepository.GetById(id);
-        if (endereco is null) return null;
+        if (endereco is null)
+        {
+            logger.LogWarning("Tentativa de atualizar endereço inexistente: {EnderecoId}", id);
+            return null;
+        }
 
         var resolved = ResolveAddress(request.Cep);
         var cepLimpo = request.Cep.Trim().Replace("-", "");
         endereco.Atualizar(cepLimpo, resolved.Rua, request.Numero.Trim(), resolved.Bairro.Id);
         enderecoRepository.Update(endereco);
+        logger.LogInformation("Endereço {EnderecoId} atualizado com sucesso.", id);
         return EnderecoResponse.FromDomain(endereco);
     }
 
-    public bool Delete(Guid id) => enderecoRepository.Delete(id);
+    public bool Delete(Guid id)
+    {
+        logger.LogInformation("Iniciando exclusão do endereço: {EnderecoId}", id);
+        var removido = enderecoRepository.Delete(id);
+        if (removido)
+            logger.LogInformation("Endereço {EnderecoId} removido com sucesso.", id);
+        else
+            logger.LogWarning("Tentativa de exclusão de endereço inexistente: {EnderecoId}", id);
+
+        return removido;
+    }
 
     private (string Rua, Bairro Bairro) ResolveAddress(string cep)
     {
         var cepLimpo = cep.Trim().Replace("-", "");
-        var cepInfo = viaCepService.ConsultarCepAsync(cepLimpo).GetAwaiter().GetResult()
-            ?? throw new InvalidOperationException($"CEP {cepLimpo} não encontrado.");
+        var cepInfo = viaCepService.ConsultarCepAsync(cepLimpo).GetAwaiter().GetResult();
+        if (cepInfo is null)
+        {
+            logger.LogWarning("Resolução de endereço falhou: CEP {Cep} não encontrado no ViaCEP.", cepLimpo);
+            throw new InvalidOperationException($"CEP {cepLimpo} não encontrado.");
+        }
 
         var estadoNome = cepInfo.Estado ?? cepInfo.Uf ?? throw new InvalidOperationException("Estado não informado na resposta do CEP.");
         var cidadeNome = cepInfo.Localidade ?? throw new InvalidOperationException("Cidade não informada na resposta do CEP.");
@@ -76,6 +106,7 @@ public sealed class EnderecoService(
         {
             endereco = new Endereco(cepLimpo, rua, numeroLimpo, bairroId);
             enderecoRepository.Add(endereco);
+            logger.LogInformation("Novo registro de endereço persistido no banco: {EnderecoId} (CEP: {Cep})", endereco.Id, cepLimpo);
         }
 
         return endereco;
@@ -91,6 +122,7 @@ public sealed class EnderecoService(
         {
             estado = new Estado(nomeNormalizado);
             estadoRepository.Add(estado);
+            logger.LogInformation("Novo Estado persistido: {NomeEstado}", nomeNormalizado);
         }
 
         return estado;
@@ -107,6 +139,7 @@ public sealed class EnderecoService(
         {
             cidade = new Cidade(nomeNormalizado, estadoId);
             cidadeRepository.Add(cidade);
+            logger.LogInformation("Nova Cidade persistida: {NomeCidade}", nomeNormalizado);
         }
 
         return cidade;
@@ -123,6 +156,7 @@ public sealed class EnderecoService(
         {
             bairro = new Bairro(nomeNormalizado, cidadeId);
             bairroRepository.Add(bairro);
+            logger.LogInformation("Novo Bairro persistido: {NomeBairro}", nomeNormalizado);
         }
 
         return bairro;
