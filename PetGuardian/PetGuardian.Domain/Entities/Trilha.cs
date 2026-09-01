@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Exceptions;
 
 namespace PetGuardian.Domain.Entities;
@@ -18,9 +18,9 @@ public sealed class Trilha : BaseEntity
 
     public Trilha(string nome, string descricao, Guid petId)
     {
-        (Nome, Descricao) = Validar(nome, descricao);
         if (petId == Guid.Empty)
             throw new DomainException("A trilha deve estar associada a um pet válido.");
+        Atualizar(nome, descricao);
         PetId = petId;
     }
 

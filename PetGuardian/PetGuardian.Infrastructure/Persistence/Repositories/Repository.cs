@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Domain.Common;
 using PetGuardian.Infrastructure.Persistence;
@@ -21,8 +22,26 @@ public class Repository<T>(PetGuardianContext context) : IRepository<T> where T 
     public IReadOnlyList<T> GetAll()
     {
         return _set
+            .AsNoTracking()
             .OrderBy(e => e.Id)
             .ToList();
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<T> Find(Expression<Func<T, bool>> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        return _set
+            .AsNoTracking()
+            .Where(predicate)
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    public T? FirstOrDefault(Expression<Func<T, bool>> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        return _set.FirstOrDefault(predicate);
     }
 
     /// <inheritdoc />
@@ -70,6 +89,13 @@ public class Repository<T>(PetGuardianContext context) : IRepository<T> where T 
     public bool ExistsById(Guid id)
     {
         return _set.Any(e => e.Id == id);
+    }
+
+    /// <inheritdoc />
+    public bool Exists(Expression<Func<T, bool>> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        return _set.Any(predicate);
     }
 
     /// <inheritdoc />

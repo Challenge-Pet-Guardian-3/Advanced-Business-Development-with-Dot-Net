@@ -1,4 +1,4 @@
-﻿using PetGuardian.Application.DTOs;
+using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
 using PetGuardian.Domain.Entities;
@@ -25,8 +25,7 @@ public sealed class PetService(
     }
 
     public IReadOnlyList<PetResponse> GetByRacaId(Guid racaId) =>
-        petRepository.GetAll()
-            .Where(p => p.RacaId == racaId)
+        petRepository.GetByRacaId(racaId)
             .Select(PetResponse.FromDomain)
             .ToList();
 

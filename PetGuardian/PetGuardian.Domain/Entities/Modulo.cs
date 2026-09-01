@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Exceptions;
 
 namespace PetGuardian.Domain.Entities;
@@ -19,9 +19,9 @@ public sealed class Modulo : BaseEntity
 
     public Modulo(string nome, string tempoConclusao, string descricao, Guid trilhaId)
     {
-        (Nome, TempoConclusao, Descricao) = Validar(nome, tempoConclusao, descricao);
         if (trilhaId == Guid.Empty)
             throw new DomainException("O módulo deve estar associado a uma trilha válida.");
+        Atualizar(nome, tempoConclusao, descricao);
         TrilhaId = trilhaId;
     }
 

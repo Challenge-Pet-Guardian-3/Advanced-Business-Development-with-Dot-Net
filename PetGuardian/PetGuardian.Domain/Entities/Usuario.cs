@@ -1,23 +1,22 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Enums;
 using PetGuardian.Domain.Exceptions;
+using PetGuardian.Domain.Helpers;
 
 namespace PetGuardian.Domain.Entities;
 
 /// <summary>
-/// Usuário do sistema. Possui telefone exclusivo (1:1).
-/// Endereços via N:N (UsuarioEndereco). Relacionamento N:N com Pet via UsuarioPet.
+/// Usuário do sistema com senha criptografada via BCrypt e Salt. Possui telefone exclusivo (1:1),
+/// endereços via N:N (UsuarioEndereco) e relacionamento N:N com Pet via UsuarioPet.
 /// </summary>
-/// <remarks>
-/// <c>Role</c> (COMUM/PREMIUM) e a coluna de senha cresceu para 60
-/// caracteres — tamanho compatível com um hash bcrypt. Isso é só o espaço no banco; o hashing em
-/// si (BCrypt.Net, Identity etc.) fica para a Sprint 4, junto com JWT (Não será implementado AINDA)
-/// </remarks>
 public sealed class Usuario : BaseEntity
 {
+    public const int MinimumPasswordLength = 6;
+
     public string      Nome  { get; private set; } = string.Empty;
     public string      Email { get; private set; } = string.Empty;
     public string      Senha { get; private set; } = string.Empty;
+    public string      Salt  { get; private set; } = string.Empty;
     public RoleUsuario Role  { get; private set; }
 
     public Guid      TelefoneId { get; private set; }
@@ -60,16 +59,22 @@ public sealed class Usuario : BaseEntity
         Email = novoEmail;
     }
 
-    public void AtualizarSenha(string novaSenha)
+    public void AtualizarSenha(string novaSenhaRaw)
     {
-        if (string.IsNullOrWhiteSpace(novaSenha) || novaSenha.Length < 6)
-            throw new DomainException("A senha deve ter pelo menos 6 caracteres.");
-        // 60 = espaço para acomodar um hash bcrypt quando o hashing for implementado (Sprint 4).
-        if (novaSenha.Length > 60)
-            throw new DomainException("A senha deve ter no máximo 60 caracteres.");
-        Senha = novaSenha;
+        if (string.IsNullOrWhiteSpace(novaSenhaRaw) || novaSenhaRaw.Length < MinimumPasswordLength)
+            throw new DomainException($"A senha deve ter pelo menos {MinimumPasswordLength} caracteres.");
+
+        Salt = Guid.NewGuid().ToString("N");
+        Senha = HashHelper.Hash(novaSenhaRaw, Salt);
     }
 
-    /// <summary>NOVO (schema 2026-08-29).</summary>
+    public bool VerifyPassword(string rawPassword)
+    {
+        if (string.IsNullOrWhiteSpace(rawPassword))
+            return false;
+
+        return HashHelper.Verify(rawPassword, Salt, Senha);
+    }
+
     public void AtualizarRole(RoleUsuario novaRole) => Role = novaRole;
 }

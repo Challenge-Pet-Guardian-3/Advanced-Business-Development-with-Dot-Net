@@ -1,4 +1,5 @@
-﻿using PetGuardian.Domain.Common;
+using System.Linq.Expressions;
+using PetGuardian.Domain.Common;
 
 namespace PetGuardian.Application.Repositories;
 
@@ -10,6 +11,10 @@ public interface IRepository<T> where T : BaseEntity
 {
     IReadOnlyList<T> GetAll();
 
+    IReadOnlyList<T> Find(Expression<Func<T, bool>> predicate);
+
+    T? FirstOrDefault(Expression<Func<T, bool>> predicate);
+
     T? GetById(Guid id);
 
     T Add(T entity);
@@ -20,10 +25,11 @@ public interface IRepository<T> where T : BaseEntity
 
     bool ExistsById(Guid id);
 
+    bool Exists(Expression<Func<T, bool>> predicate);
+
     /// <summary>
     /// Verifica existência pelo campo <c>Nome</c>. Lança <see cref="InvalidOperationException"/>
     /// se a entidade não possuir essa propriedade mapeada.
     /// </summary>
     bool ExistsByNome(string valor);
-
 }

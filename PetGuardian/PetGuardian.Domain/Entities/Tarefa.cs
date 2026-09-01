@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Exceptions;
 
 namespace PetGuardian.Domain.Entities;
@@ -39,7 +39,6 @@ public sealed class Tarefa : BaseEntity
         Guid     statusId,
         Guid     usuarioId)
     {
-        ValidarCamposEditaveis(titulo, pontosTarefa, descricao, prazo);
         if (petId == Guid.Empty)
             throw new DomainException("A tarefa deve estar associada a um pet válido.");
         if (statusId == Guid.Empty)
@@ -47,15 +46,11 @@ public sealed class Tarefa : BaseEntity
         if (usuarioId == Guid.Empty)
             throw new DomainException("A tarefa deve estar associada a um usuário responsável válido.");
 
-        Titulo       = titulo.Trim();
-        PontosTarefa = pontosTarefa;
-        Descricao    = descricao.Trim();
-        Criacao      = DateTime.UtcNow;
-        Prazo        = prazo;
-        Conclusao    = null;
-        PetId        = petId;
-        StatusId     = statusId;
-        UsuarioId    = usuarioId;
+        Atualizar(titulo, pontosTarefa, descricao, prazo);
+        Criacao   = DateTime.UtcNow;
+        PetId     = petId;
+        StatusId  = statusId;
+        UsuarioId = usuarioId;
     }
 
     /// <summary>Atualiza os campos editáveis de uma tarefa ainda não concluída (usado pelo PUT).</summary>

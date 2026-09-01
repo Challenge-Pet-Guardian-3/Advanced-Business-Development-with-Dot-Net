@@ -1,4 +1,4 @@
-﻿namespace PetGuardian.Domain.Enums;
+namespace PetGuardian.Domain.Enums;
 
 /// <summary>
 /// Nível de plano/acesso do usuário.

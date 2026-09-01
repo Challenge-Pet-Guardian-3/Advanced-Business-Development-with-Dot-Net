@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Enums;
 using PetGuardian.Domain.Exceptions;
 
@@ -47,17 +47,7 @@ public sealed class Pet : BaseEntity
 
     public Pet(string nome, DateTime dataNascimento, SexoPet sexo, PortePet porte, bool castrado, Guid racaId)
     {
-        ValidarNome(nome);
-        ValidarDataNascimento(dataNascimento);
-        if (racaId == Guid.Empty)
-            throw new DomainException("O pet deve estar associado a uma raça válida.");
-
-        Nome           = nome.Trim();
-        DataNascimento = dataNascimento.Date;
-        Sexo           = sexo;
-        Porte          = porte;
-        Castrado       = castrado;
-        RacaId         = racaId;
+        Atualizar(nome, dataNascimento, sexo, porte, castrado, racaId);
     }
 
     /// <summary>Atualiza os dados editáveis do pet (usado pelo endpoint PUT).</summary>

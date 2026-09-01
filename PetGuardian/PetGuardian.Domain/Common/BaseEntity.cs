@@ -1,4 +1,4 @@
-﻿namespace PetGuardian.Domain.Common;
+namespace PetGuardian.Domain.Common;
 
 public abstract class BaseEntity
 {

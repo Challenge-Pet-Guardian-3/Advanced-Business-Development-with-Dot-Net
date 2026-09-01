@@ -112,13 +112,11 @@ public sealed class UsuarioPetService(
         var petsDaRede = new List<RedeCuidadoPetResponse>();
         var coCuidadorIds = new HashSet<Guid>();
 
-        foreach (var petId in petIds)
-        {
-            var pet = petRepository.GetById(petId);
-            if (pet is null)
-                continue;
+        var pets = petRepository.Find(p => petIds.Contains(p.Id));
 
-            var tarefas = tarefaRepository.GetByPetId(petId)
+        foreach (var pet in pets)
+        {
+            var tarefas = tarefaRepository.GetByPetId(pet.Id)
                 .Select(t => new RedeCuidadoTarefaResponse(
                     t.Id,
                     t.Titulo,
@@ -129,7 +127,7 @@ public sealed class UsuarioPetService(
                     t.PontosTarefa))
                 .ToList();
 
-            var historico = historicoRepository.GetByPetId(petId)
+            var historico = historicoRepository.GetByPetId(pet.Id)
                 .Select(h => new RedeCuidadoHistoricoResponse(h.Id, h.TipoHist, h.DataHist))
                 .ToList();
 
@@ -139,7 +137,7 @@ public sealed class UsuarioPetService(
                 tarefas,
                 historico));
 
-            var vinculosDoPet = usuarioPetRepository.GetByPetId(petId);
+            var vinculosDoPet = usuarioPetRepository.GetByPetId(pet.Id);
             foreach (var vinculo in vinculosDoPet)
             {
                 if (vinculo.UsuarioId != usuarioId)
@@ -147,10 +145,9 @@ public sealed class UsuarioPetService(
             }
         }
 
-        var coCuidadores = coCuidadorIds
-            .Select(id => usuarioRepository.GetById(id))
-            .Where(u => u is not null)
-            .Select(u => new RedeCuidadoCoCuidadorResponse(u!.Id, u.Nome, u.Email))
+        var coCuidadores = usuarioRepository
+            .Find(u => coCuidadorIds.Contains(u.Id))
+            .Select(u => new RedeCuidadoCoCuidadorResponse(u.Id, u.Nome, u.Email))
             .OrderBy(u => u.Nome)
             .ToList();
 

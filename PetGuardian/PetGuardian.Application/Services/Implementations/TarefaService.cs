@@ -1,4 +1,4 @@
-﻿using PetGuardian.Application.DTOs;
+using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
 using PetGuardian.Domain.Entities;
@@ -87,8 +87,8 @@ public sealed class TarefaService(
 
     private Status BuscarStatusObrigatorio(string nomeStatus)
     {
-        return statusRepository.GetAll()
-            .FirstOrDefault(s => s.NomeStatus.Equals(nomeStatus, StringComparison.OrdinalIgnoreCase))
+        var nomeLower = nomeStatus.ToLower();
+        return statusRepository.FirstOrDefault(s => s.NomeStatus.ToLower() == nomeLower)
             ?? throw new InvalidOperationException($"Status obrigatório não encontrado: {nomeStatus}.");
     }
 }

@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Common;
+using PetGuardian.Domain.Common;
 using PetGuardian.Domain.Exceptions;
 
 namespace PetGuardian.Domain.Entities;
@@ -22,12 +22,11 @@ public sealed class Aula : BaseEntity
 
     public Aula(string nome, string descricao, int pontosAula, string dificuldade, string conteudo, bool concluida, Guid moduloId)
     {
-        (Nome, Descricao, PontosAula, Dificuldade, Conteudo) = Validar(nome, descricao, pontosAula, dificuldade, conteudo);
         if (moduloId == Guid.Empty)
             throw new DomainException("A aula deve estar associada a um módulo válido.");
 
-        Concluida = concluida;
-        ModuloId  = moduloId;
+        Atualizar(nome, descricao, pontosAula, dificuldade, conteudo, concluida);
+        ModuloId = moduloId;
     }
 
     /// <summary>Atualiza os campos editáveis (usado pelo PUT). O módulo vinculado não é reatribuível por aqui.</summary>

@@ -1,4 +1,4 @@
-﻿using PetGuardian.Application.DTOs;
+using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
 using PetGuardian.Domain.Entities;
@@ -19,8 +19,7 @@ public sealed class CidadeService(
     }
 
     public IReadOnlyList<CidadeResponse> GetByEstadoId(Guid estadoId) =>
-        cidadeRepository.GetAll()
-            .Where(c => c.EstadoId == estadoId)
+        cidadeRepository.Find(c => c.EstadoId == estadoId)
             .Select(CidadeResponse.FromDomain)
             .ToList();
 
