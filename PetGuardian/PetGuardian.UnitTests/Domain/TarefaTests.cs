@@ -41,10 +41,11 @@ public class TarefaTests(TestFixture fixture)
         // Arrange
         var prazoPassado = DateTime.UtcNow.AddHours(-1);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() =>
             new Tarefa("Banho", 20, "Banho no pet", prazoPassado, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()));
 
+        // Assert
         Assert.Equal("O prazo deve ser uma data/hora futura.", ex.Message);
     }
 
@@ -88,10 +89,11 @@ public class TarefaTests(TestFixture fixture)
         var tarefa = fixture.CriarTarefaValida();
         tarefa.Concluir();
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() =>
             tarefa.Atualizar("Novo Titulo", 10, "Nova Desc", DateTime.UtcNow.AddDays(1)));
 
+        // Assert
         Assert.Equal("Não é possível editar uma tarefa já concluída.", ex.Message);
     }
 }

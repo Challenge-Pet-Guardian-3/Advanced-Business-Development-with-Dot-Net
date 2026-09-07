@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using PetGuardian.Application.Common;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
@@ -42,6 +43,9 @@ public sealed class PetService(
 
     public IReadOnlyList<PetHistoricoItemResponse> GetHistorico(Guid petId)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("PetService.GetHistorico");
+        activity?.SetTag("pet.id", petId.ToString());
+
         logger.LogInformation("Buscando linha do tempo histórica do pet: {PetId}", petId);
         if (!petRepository.ExistsById(petId))
         {
@@ -84,6 +88,10 @@ public sealed class PetService(
 
     public PetResponse Create(PetRequest request)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("PetService.Create");
+        activity?.SetTag("pet.nome", request.Nome);
+        activity?.SetTag("pet.racaId", request.RacaId.ToString());
+
         logger.LogInformation("Iniciando cadastro do pet {Nome}, Raça: {RacaId}, Porte: {Porte}, Sexo: {Sexo}",
             request.Nome, request.RacaId, request.Porte, request.Sexo);
 
@@ -101,6 +109,9 @@ public sealed class PetService(
     
     public PetResponse? Update(Guid id, PetRequest request)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("PetService.Update");
+        activity?.SetTag("pet.id", id.ToString());
+
         logger.LogInformation("Iniciando atualização do pet: {PetId}", id);
         var pet = petRepository.GetById(id);
         if (pet is null)

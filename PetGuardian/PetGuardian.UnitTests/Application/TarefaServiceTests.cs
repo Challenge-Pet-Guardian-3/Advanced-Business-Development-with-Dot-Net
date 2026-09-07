@@ -68,8 +68,10 @@ public class TarefaServiceTests(TestFixture fixture)
         _usuarioRepoMock.Setup(r => r.ExistsById(usuarioId)).Returns(true);
         _usuarioPetRepoMock.Setup(r => r.Exists(usuarioId, petId)).Returns(false);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => service.Create(request));
+
+        // Assert
         Assert.Equal("Somente cuidadores vinculados ao pet podem receber tarefas.", ex.Message);
     }
 

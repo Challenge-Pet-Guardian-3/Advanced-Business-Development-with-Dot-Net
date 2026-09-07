@@ -11,7 +11,7 @@ using Xunit;
 namespace PetGuardian.UnitTests.Application;
 
 [Collection(UnitTestCollection.Name)]
-public class EnderecoServiceTests
+public class EnderecoServiceTests(TestFixture fixture)
 {
     private readonly Mock<IRepository<Endereco>> _enderecoRepoMock = new();
     private readonly Mock<IRepository<Bairro>> _bairroRepoMock = new();
@@ -76,8 +76,44 @@ public class EnderecoServiceTests
         _viaCepMock.Setup(v => v.ConsultarCepAsync("99999999", It.IsAny<CancellationToken>()))
             .ReturnsAsync((ViaCepResponseDto?)null);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => service.Create(request));
+
+        // Assert
         Assert.Equal("CEP 99999999 não encontrado.", ex.Message);
+    }
+
+    [Fact]
+    public void GetById_EnderecoExistente_DeveRetornarResponse()
+    {
+        // Arrange
+        var service = CreateService();
+        var endereco = fixture.CriarEnderecoValido();
+        _enderecoRepoMock.Setup(r => r.GetById(endereco.Id)).Returns(endereco);
+
+        // Act
+        var response = service.GetById(endereco.Id);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(endereco.Id, response.Id);
+        Assert.Equal(endereco.Cep, response.Cep);
+        _enderecoRepoMock.Verify(r => r.GetById(endereco.Id), Times.Once);
+    }
+
+    [Fact]
+    public void Delete_IdValido_DeveRetornarTrue()
+    {
+        // Arrange
+        var service = CreateService();
+        var id = Guid.NewGuid();
+        _enderecoRepoMock.Setup(r => r.Delete(id)).Returns(true);
+
+        // Act
+        var resultado = service.Delete(id);
+
+        // Assert
+        Assert.True(resultado);
+        _enderecoRepoMock.Verify(r => r.Delete(id), Times.Once);
     }
 }

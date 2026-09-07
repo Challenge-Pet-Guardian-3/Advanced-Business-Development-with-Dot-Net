@@ -13,7 +13,10 @@ public class HealthCheckEndpointsTests(CustomWebApplicationFactory factory)
     [Fact]
     public async Task Health_EndpointGeral_DeveRetornarStatus200EJsonValido()
     {
-        // Arrange & Act
+        // Arrange
+        // (Sem payload adicional necessário para endpoint GET de monitoramento)
+
+        // Act
         var response = await _client.GetAsync("/health");
 
         // Assert
@@ -25,7 +28,10 @@ public class HealthCheckEndpointsTests(CustomWebApplicationFactory factory)
     [Fact]
     public async Task HealthReady_EndpointProntidao_DeveRetornarStatus200()
     {
-        // Arrange & Act
+        // Arrange
+        // (Sem payload adicional necessário para probe de prontidão)
+
+        // Act
         var response = await _client.GetAsync("/health/ready");
 
         // Assert
@@ -37,7 +43,10 @@ public class HealthCheckEndpointsTests(CustomWebApplicationFactory factory)
     [Fact]
     public async Task HealthLive_EndpointLiveness_DeveRetornarStatus200()
     {
-        // Arrange & Act
+        // Arrange
+        // (Sem payload adicional necessário para probe de liveness)
+
+        // Act
         var response = await _client.GetAsync("/health/live");
 
         // Assert

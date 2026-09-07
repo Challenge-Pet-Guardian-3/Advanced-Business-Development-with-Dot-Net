@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using PetGuardian.Application.Common;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
@@ -54,6 +55,10 @@ public sealed class TarefaService(
 
     public TarefaResponse Create(TarefaRequest request)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("TarefaService.Create");
+        activity?.SetTag("tarefa.petId", request.PetId.ToString());
+        activity?.SetTag("tarefa.usuarioId", request.UsuarioId.ToString());
+
         logger.LogInformation("Iniciando criação de tarefa '{Titulo}' para o pet {PetId}, Responsável: {UsuarioId}, Pontos: {PontosTarefa}",
             request.Titulo, request.PetId, request.UsuarioId, request.PontosTarefa);
 
@@ -100,6 +105,10 @@ public sealed class TarefaService(
 
     public TarefaResponse Concluir(Guid tarefaId, Guid usuarioId)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("TarefaService.Concluir");
+        activity?.SetTag("tarefa.id", tarefaId.ToString());
+        activity?.SetTag("tarefa.usuarioId", usuarioId.ToString());
+
         logger.LogInformation("Iniciando conclusão da tarefa {TarefaId} pelo usuário {UsuarioId}", tarefaId, usuarioId);
         var tarefa = tarefaRepository.GetById(tarefaId);
         if (tarefa is null)

@@ -12,67 +12,135 @@ public class TarefaControllerIntegrationTests(CustomWebApplicationFactory factor
 {
     private readonly HttpClient _client = factory.CreateClient();
 
-    [Fact]
-    public async Task FluxoCompleto_Tarefa_CriacaoEdicaoEConclusao_DeveFuncionar()
+    private async Task<(PetResponse Pet, UsuarioResponse Usuario)> CriarContextoAuxiliarAsync()
     {
-        // 1. Criar pet e usuário com vínculo
         var racas = await _client.GetFromJsonAsync<List<RacaResponse>>("/api/raca");
-        var racaId = racas!.First().Id;
+        Assert.NotNull(racas);
 
-        var petPost = await _client.PostAsJsonAsync("/api/pet", new PetRequest("Mel", DateTime.UtcNow.AddYears(-1), SexoPet.Femea, PortePet.Pequeno, false, racaId));
+        var petPost = await _client.PostAsJsonAsync("/api/pet", new PetRequest(
+            "Pet Tarefa",
+            DateTime.UtcNow.AddYears(-1),
+            SexoPet.Femea,
+            PortePet.Pequeno,
+            false,
+            racas.First().Id
+        ));
         var pet = await petPost.Content.ReadFromJsonAsync<PetResponse>();
+        Assert.NotNull(pet);
 
         var telPost = await _client.PostAsJsonAsync("/api/telefone", new TelefoneRequest("11", "988887777"));
         var tel = await telPost.Content.ReadFromJsonAsync<TelefoneResponse>();
+        Assert.NotNull(tel);
 
-        var userPost = await _client.PostAsJsonAsync("/api/usuario", new UsuarioRequest("Guilherme", $"gui_{Guid.NewGuid():N}@teste.com", "senha123", RoleUsuario.Comum, tel!.Id));
+        var email = $"cuidador_{Guid.NewGuid():N}"[..25] + "@teste.com";
+        var userPost = await _client.PostAsJsonAsync("/api/usuario", new UsuarioRequest("Cuidador Tarefa", email, "senha123", RoleUsuario.Comum, tel.Id));
         var user = await userPost.Content.ReadFromJsonAsync<UsuarioResponse>();
+        Assert.NotNull(user);
 
-        // Vincular usuário ao pet como cuidador
-        var vinculoPost = await _client.PostAsJsonAsync("/api/usuariopet", new UsuarioPetRequest(user!.Id, pet!.Id, ResponPrinc: true));
-        Assert.Equal(HttpStatusCode.Created, vinculoPost.StatusCode);
+        await _client.PostAsJsonAsync("/api/usuariopet", new UsuarioPetRequest(user.Id, pet.Id, ResponPrinc: true));
 
-        // 2. CREATE TAREFA (POST)
-        var tarefaRequest = new TarefaRequest(
-            Titulo: "Dar Ração Especial",
-            PontosTarefa: 25,
-            Descricao: "Ração hipoalergênica 100g",
-            Prazo: DateTime.UtcNow.AddDays(1),
-            PetId: pet.Id,
-            UsuarioId: user.Id
-        );
+        return (pet, user);
+    }
 
-        var tarefaPost = await _client.PostAsJsonAsync("/api/tarefa", tarefaRequest);
-        Assert.Equal(HttpStatusCode.Created, tarefaPost.StatusCode);
-        var tarefa = await tarefaPost.Content.ReadFromJsonAsync<TarefaResponse>();
+    [Fact]
+    public async Task Post_ComDadosValidos_DeveRetornar201Created()
+    {
+        // Arrange
+        var (pet, user) = await CriarContextoAuxiliarAsync();
+        var request = new TarefaRequest("Dar Ração Especial", 25, "Ração hipoalergênica 100g", DateTime.UtcNow.AddDays(1), pet.Id, user.Id);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/tarefa", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var tarefa = await response.Content.ReadFromJsonAsync<TarefaResponse>();
         Assert.NotNull(tarefa);
         Assert.Equal("Dar Ração Especial", tarefa.Titulo);
+        Assert.Equal(25, tarefa.PontosTarefa);
+    }
 
-        // 3. UPDATE TAREFA (PUT)
-        var updateRequest = new TarefaUpdateRequest(
-            Titulo: "Dar Ração Especial 150g",
-            PontosTarefa: 30,
-            Descricao: "Aumentar dose para 150g",
-            Prazo: DateTime.UtcNow.AddDays(2)
-        );
+    [Fact]
+    public async Task GetById_IdExistente_DeveRetornar200Ok()
+    {
+        // Arrange
+        var (pet, user) = await CriarContextoAuxiliarAsync();
+        var postRes = await _client.PostAsJsonAsync("/api/tarefa", new TarefaRequest("Passeio Diário", 15, "Caminhar 20 min", DateTime.UtcNow.AddDays(1), pet.Id, user.Id));
+        var criada = await postRes.Content.ReadFromJsonAsync<TarefaResponse>();
+        Assert.NotNull(criada);
 
-        var putResponse = await _client.PutAsJsonAsync($"/api/tarefa/{tarefa.Id}", updateRequest);
-        Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
-        var tarefaAtualizada = await putResponse.Content.ReadFromJsonAsync<TarefaResponse>();
-        Assert.NotNull(tarefaAtualizada);
-        Assert.Equal("Dar Ração Especial 150g", tarefaAtualizada.Titulo);
-        Assert.Equal(30, tarefaAtualizada.PontosTarefa);
+        // Act
+        var response = await _client.GetAsync($"/api/tarefa/{criada.Id}");
 
-        // 4. CONCLUIR TAREFA (POST)
-        var concluirRequest = new TarefaConcluirRequest(user.Id);
-        var concluirResponse = await _client.PostAsJsonAsync($"/api/tarefa/{tarefa.Id}/concluir", concluirRequest);
-        Assert.Equal(HttpStatusCode.OK, concluirResponse.StatusCode);
-        var tarefaConcluida = await concluirResponse.Content.ReadFromJsonAsync<TarefaResponse>();
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var lida = await response.Content.ReadFromJsonAsync<TarefaResponse>();
+        Assert.NotNull(lida);
+        Assert.Equal(criada.Id, lida.Id);
+    }
+
+    [Fact]
+    public async Task GetById_IdInexistente_DeveRetornar404NotFound()
+    {
+        // Arrange
+        var idInexistente = Guid.NewGuid();
+
+        // Act
+        var response = await _client.GetAsync($"/api/tarefa/{idInexistente}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Concluir_TarefaPendenteValida_DeveRetornar200OkEConcluirTarefa()
+    {
+        // Arrange
+        var (pet, user) = await CriarContextoAuxiliarAsync();
+        var postRes = await _client.PostAsJsonAsync("/api/tarefa", new TarefaRequest("Administrar Medicamento", 50, "Antibiótico às 14h", DateTime.UtcNow.AddDays(1), pet.Id, user.Id));
+        var criada = await postRes.Content.ReadFromJsonAsync<TarefaResponse>();
+        Assert.NotNull(criada);
+
+        // Act
+        var concluirRes = await _client.PostAsJsonAsync($"/api/tarefa/{criada.Id}/concluir", new TarefaConcluirRequest(user.Id));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, concluirRes.StatusCode);
+        var tarefaConcluida = await concluirRes.Content.ReadFromJsonAsync<TarefaResponse>();
         Assert.NotNull(tarefaConcluida);
         Assert.NotNull(tarefaConcluida.Conclusao);
+    }
 
-        // 5. DELETE TAREFA
-        var deleteResponse = await _client.DeleteAsync($"/api/tarefa/{tarefa.Id}");
-        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+    [Fact]
+    public async Task Delete_IdValido_DeveRetornar204NoContent()
+    {
+        // Arrange
+        var (pet, user) = await CriarContextoAuxiliarAsync();
+        var postRes = await _client.PostAsJsonAsync("/api/tarefa", new TarefaRequest("Tarefa Deletar", 10, "Desc", DateTime.UtcNow.AddDays(1), pet.Id, user.Id));
+        var criada = await postRes.Content.ReadFromJsonAsync<TarefaResponse>();
+        Assert.NotNull(criada);
+
+        // Act
+        var delRes = await _client.DeleteAsync($"/api/tarefa/{criada.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, delRes.StatusCode);
+
+        var getAposDelete = await _client.GetAsync($"/api/tarefa/{criada.Id}");
+        Assert.Equal(HttpStatusCode.NotFound, getAposDelete.StatusCode);
+    }
+
+    [Fact]
+    public async Task Post_ComPrazoInvalido_DeveRetornar400BadRequest()
+    {
+        // Arrange
+        var (pet, user) = await CriarContextoAuxiliarAsync();
+        var requestInvalido = new TarefaRequest("Tarefa Vencida", 10, "Prazo no passado", DateTime.UtcNow.AddDays(-2), pet.Id, user.Id);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/tarefa", requestInvalido);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }

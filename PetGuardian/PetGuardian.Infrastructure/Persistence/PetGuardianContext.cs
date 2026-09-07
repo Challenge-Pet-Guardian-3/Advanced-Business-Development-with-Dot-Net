@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetGuardian.Domain.Entities;
 
 namespace PetGuardian.Infrastructure.Persistence;
@@ -43,5 +43,20 @@ public class PetGuardianContext(DbContextOptions<PetGuardianContext> options) : 
             .HasKey(ue => new { ue.UsuarioId, ue.EnderecoId });
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PetGuardianContext).Assembly);
+
+        // Padronização Oracle: tabelas e colunas em UPPERCASE evitam erro ORA-00942 de case sensitivity com aspas duplas
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            var tableName = entity.GetTableName();
+            if (!string.IsNullOrEmpty(tableName))
+                entity.SetTableName(tableName.ToUpperInvariant());
+
+            foreach (var property in entity.GetProperties())
+            {
+                var columnName = property.GetColumnName();
+                if (!string.IsNullOrEmpty(columnName))
+                    property.SetColumnName(columnName.ToUpperInvariant());
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using PetGuardian.Domain.Entities;
+using PetGuardian.Domain.Entities;
 
 namespace PetGuardian.Application.Repositories;
 
@@ -11,6 +11,7 @@ public interface IUsuarioPetRepository
     IReadOnlyList<UsuarioPet> GetAll();
     IReadOnlyList<UsuarioPet> GetByUsuarioId(Guid usuarioId);
     IReadOnlyList<UsuarioPet> GetByPetId(Guid petId);
+    IReadOnlyList<UsuarioPet> GetByPetIds(IEnumerable<Guid> petIds);
     UsuarioPet? GetByUsuarioAndPet(Guid usuarioId, Guid petId);
     UsuarioPet Add(UsuarioPet entity);
     UsuarioPet Update(UsuarioPet entity);

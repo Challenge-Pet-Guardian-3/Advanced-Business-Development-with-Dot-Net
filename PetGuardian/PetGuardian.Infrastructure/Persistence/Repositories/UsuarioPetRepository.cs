@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Domain.Entities;
 
@@ -15,6 +15,9 @@ public sealed class UsuarioPetRepository(PetGuardianContext context) : IUsuarioP
 
     public IReadOnlyList<UsuarioPet> GetByPetId(Guid petId) =>
         context.UsuarioPets.AsNoTracking().Where(up => up.PetId == petId).ToList();
+
+    public IReadOnlyList<UsuarioPet> GetByPetIds(IEnumerable<Guid> petIds) =>
+        context.UsuarioPets.AsNoTracking().Where(up => petIds.Contains(up.PetId)).ToList();
 
     public UsuarioPet? GetByUsuarioAndPet(Guid usuarioId, Guid petId) =>
         context.UsuarioPets.FirstOrDefault(up => up.UsuarioId == usuarioId && up.PetId == petId);

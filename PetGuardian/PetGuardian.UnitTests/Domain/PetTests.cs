@@ -40,10 +40,11 @@ public class PetTests(TestFixture fixture)
     [InlineData(null)]
     public void Construtor_NomeInvalido_DeveLancarDomainException(string? nomeInvalido)
     {
-        // Arrange & Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() =>
             new Pet(nomeInvalido!, DateTime.UtcNow.AddYears(-1), SexoPet.Femea, PortePet.Pequeno, false, Guid.NewGuid()));
 
+        // Assert
         Assert.Equal("O nome do pet não pode ser vazio.", ex.Message);
     }
 
@@ -53,20 +54,22 @@ public class PetTests(TestFixture fixture)
         // Arrange
         var dataFutura = DateTime.UtcNow.AddDays(2);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() =>
             new Pet("Bob", dataFutura, SexoPet.Macho, PortePet.Medio, false, Guid.NewGuid()));
 
+        // Assert
         Assert.Equal("A data de nascimento não pode estar no futuro.", ex.Message);
     }
 
     [Fact]
     public void Construtor_RacaIdVazio_DeveLancarDomainException()
     {
-        // Arrange & Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() =>
             new Pet("Mel", DateTime.UtcNow.AddYears(-1), SexoPet.Femea, PortePet.Pequeno, false, Guid.Empty));
 
+        // Assert
         Assert.Equal("O pet deve estar associado a uma raça válida.", ex.Message);
     }
 
@@ -114,8 +117,52 @@ public class PetTests(TestFixture fixture)
         var pet = fixture.CriarPetValido();
         pet.Castrar();
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<DomainException>(() => pet.Castrar());
+
+        // Assert
         Assert.Equal("O pet já foi castrado.", ex.Message);
+    }
+
+    [Fact]
+    public void Construtor_NomeMuitoLongo_DeveLancarDomainException()
+    {
+        // Arrange
+        var nomeLongo = new string('A', 31);
+
+        // Act
+        var ex = Assert.Throws<DomainException>(() =>
+            new Pet(nomeLongo, DateTime.UtcNow.AddYears(-1), SexoPet.Macho, PortePet.Pequeno, false, Guid.NewGuid()));
+
+        // Assert
+        Assert.Equal("O nome do pet deve ter no máximo 30 caracteres.", ex.Message);
+    }
+
+    [Fact]
+    public void Construtor_DataNascimentoMuitoAntiga_DeveLancarDomainException()
+    {
+        // Arrange
+        var dataAntiga = DateTime.UtcNow.AddYears(-41);
+
+        // Act
+        var ex = Assert.Throws<DomainException>(() =>
+            new Pet("Rex", dataAntiga, SexoPet.Macho, PortePet.Pequeno, false, Guid.NewGuid()));
+
+        // Assert
+        Assert.Equal("A data de nascimento informada é inválida.", ex.Message);
+    }
+
+    [Fact]
+    public void Atualizar_NomeInvalido_DeveLancarDomainException()
+    {
+        // Arrange
+        var pet = fixture.CriarPetValido();
+
+        // Act
+        var ex = Assert.Throws<DomainException>(() =>
+            pet.Atualizar("", DateTime.UtcNow.AddYears(-2), SexoPet.Macho, PortePet.Medio, false, Guid.NewGuid()));
+
+        // Assert
+        Assert.Equal("O nome do pet não pode ser vazio.", ex.Message);
     }
 }

@@ -52,8 +52,10 @@ public class PetServiceTests(TestFixture fixture)
 
         _racaRepoMock.Setup(r => r.ExistsById(racaId)).Returns(false);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => service.Create(request));
+
+        // Assert
         Assert.Equal("Raça não encontrada.", ex.Message);
     }
 
@@ -127,7 +129,7 @@ public class PetServiceTests(TestFixture fixture)
     }
 
     [Fact]
-    public void GetByRacaId_DeveChamarRepositorioERetornarPets()
+    public void GetByRacaId_RacaComPetsCadastrados_DeveChamarRepositorioERetornarPets()
     {
         // Arrange
         var service = CreateService();

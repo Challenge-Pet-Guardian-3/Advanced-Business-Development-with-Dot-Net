@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using PetGuardian.Application.Common;
 using PetGuardian.Application.DTOs;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Interfaces;
@@ -37,6 +38,10 @@ public sealed class UsuarioPetService(
 
     public UsuarioPetResponse Create(UsuarioPetRequest request)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("UsuarioPetService.Create");
+        activity?.SetTag("usuarioPet.usuarioId", request.UsuarioId.ToString());
+        activity?.SetTag("usuarioPet.petId", request.PetId.ToString());
+
         logger.LogInformation("Iniciando vínculo entre Usuário {UsuarioId} e Pet {PetId}, Responsável Principal: {ResponPrinc}",
             request.UsuarioId, request.PetId, request.ResponPrinc);
 
@@ -155,6 +160,9 @@ public sealed class UsuarioPetService(
 
     public RedeCuidadoResponse GetRedeCuidadoByUsuarioId(Guid usuarioId)
     {
+        using var activity = PetGuardianActivitySource.Source.StartActivity("UsuarioPetService.GetRedeCuidado");
+        activity?.SetTag("redeCuidado.usuarioId", usuarioId.ToString());
+
         logger.LogInformation("Montando árvore completa da rede de cuidado para o usuário: {UsuarioId}", usuarioId);
         if (!usuarioRepository.ExistsById(usuarioId))
         {
@@ -165,14 +173,23 @@ public sealed class UsuarioPetService(
         var vinculosDoUsuario = usuarioPetRepository.GetByUsuarioId(usuarioId);
         var petIds = vinculosDoUsuario.Select(v => v.PetId).Distinct().ToList();
 
+        var pets = petRepository.Find(p => petIds.Contains(p.Id));
+
+        var tarefasLookup = tarefaRepository.Find(t => petIds.Contains(t.PetId))
+            .ToLookup(t => t.PetId);
+
+        var historicosLookup = historicoRepository.Find(h => petIds.Contains(h.PetId))
+            .ToLookup(h => h.PetId);
+
+        var vinculosPetsLookup = usuarioPetRepository.GetByPetIds(petIds)
+            .ToLookup(v => v.PetId);
+
         var petsDaRede = new List<RedeCuidadoPetResponse>();
         var coCuidadorIds = new HashSet<Guid>();
 
-        var pets = petRepository.Find(p => petIds.Contains(p.Id));
-
         foreach (var pet in pets)
         {
-            var tarefas = tarefaRepository.GetByPetId(pet.Id)
+            var tarefas = tarefasLookup[pet.Id]
                 .Select(t => new RedeCuidadoTarefaResponse(
                     t.Id,
                     t.Titulo,
@@ -183,7 +200,7 @@ public sealed class UsuarioPetService(
                     t.PontosTarefa))
                 .ToList();
 
-            var historico = historicoRepository.GetByPetId(pet.Id)
+            var historico = historicosLookup[pet.Id]
                 .Select(h => new RedeCuidadoHistoricoResponse(h.Id, h.TipoHist, h.DataHist))
                 .ToList();
 
@@ -193,8 +210,7 @@ public sealed class UsuarioPetService(
                 tarefas,
                 historico));
 
-            var vinculosDoPet = usuarioPetRepository.GetByPetId(pet.Id);
-            foreach (var vinculo in vinculosDoPet)
+            foreach (var vinculo in vinculosPetsLookup[pet.Id])
             {
                 if (vinculo.UsuarioId != usuarioId)
                     coCuidadorIds.Add(vinculo.UsuarioId);

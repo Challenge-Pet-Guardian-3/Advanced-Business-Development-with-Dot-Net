@@ -11,7 +11,7 @@ using Xunit;
 namespace PetGuardian.UnitTests.Application;
 
 [Collection(UnitTestCollection.Name)]
-public class UsuarioPetServiceTests
+public class UsuarioPetServiceTests(TestFixture fixture)
 {
     private readonly Mock<IUsuarioPetRepository> _usuarioPetRepoMock = new();
     private readonly Mock<IUsuarioRepository> _usuarioRepoMock = new();
@@ -37,7 +37,7 @@ public class UsuarioPetServiceTests
         var convidadoId = Guid.NewGuid();
         var petId = Guid.NewGuid();
 
-        var adminVinculo = new UsuarioPet(adminId, petId, responPrinc: true);
+        var adminVinculo = fixture.CriarUsuarioPetValido(adminId, petId, responPrinc: true);
         var request = new UsuarioPetInviteByUsuarioRequest(adminId, convidadoId, petId);
 
         _usuarioRepoMock.Setup(r => r.ExistsById(adminId)).Returns(true);
@@ -63,14 +63,16 @@ public class UsuarioPetServiceTests
         var service = CreateService();
         var usuarioId = Guid.NewGuid();
         var petId = Guid.NewGuid();
-        var vinculo = new UsuarioPet(usuarioId, petId, responPrinc: true);
+        var vinculo = fixture.CriarUsuarioPetValido(usuarioId, petId, responPrinc: true);
         var request = new UsuarioPetUpdateRequest(ResponPrinc: false);
 
         _usuarioPetRepoMock.Setup(r => r.GetByUsuarioAndPet(usuarioId, petId)).Returns(vinculo);
         _usuarioPetRepoMock.Setup(r => r.GetByPetId(petId)).Returns([vinculo]);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => service.Update(usuarioId, petId, request));
+
+        // Assert
         Assert.Contains("Não é permitido remover o único responsável principal", ex.Message);
     }
 
@@ -81,19 +83,18 @@ public class UsuarioPetServiceTests
         var service = CreateService();
         var usuarioId = Guid.NewGuid();
         var coCuidadorId = Guid.NewGuid();
-        var petId = Guid.NewGuid();
-        var pet = new Pet("Bidu", DateTime.UtcNow.AddYears(-3), SexoPet.Macho, PortePet.Pequeno, false, Guid.NewGuid());
-        var coCuidador = new Usuario("CoCuidador", "co@teste.com", "senha123", RoleUsuario.Comum, Guid.NewGuid());
+        var pet = fixture.CriarPetValido("Bidu");
+        var coCuidador = fixture.CriarUsuarioValido("CoCuidador", "co@teste.com");
 
-        var vinculo1 = new UsuarioPet(usuarioId, pet.Id, true);
-        var vinculo2 = new UsuarioPet(coCuidadorId, pet.Id, false);
+        var vinculo1 = fixture.CriarUsuarioPetValido(usuarioId, pet.Id, true);
+        var vinculo2 = fixture.CriarUsuarioPetValido(coCuidadorId, pet.Id, false);
 
         _usuarioRepoMock.Setup(r => r.ExistsById(usuarioId)).Returns(true);
         _usuarioPetRepoMock.Setup(r => r.GetByUsuarioId(usuarioId)).Returns([vinculo1]);
         _petRepoMock.Setup(r => r.Find(It.IsAny<System.Linq.Expressions.Expression<Func<Pet, bool>>>())).Returns([pet]);
-        _tarefaRepoMock.Setup(r => r.GetByPetId(pet.Id)).Returns([]);
-        _historicoRepoMock.Setup(r => r.GetByPetId(pet.Id)).Returns([]);
-        _usuarioPetRepoMock.Setup(r => r.GetByPetId(pet.Id)).Returns([vinculo1, vinculo2]);
+        _tarefaRepoMock.Setup(r => r.Find(It.IsAny<System.Linq.Expressions.Expression<Func<Tarefa, bool>>>())).Returns([]);
+        _historicoRepoMock.Setup(r => r.Find(It.IsAny<System.Linq.Expressions.Expression<Func<Historico, bool>>>())).Returns([]);
+        _usuarioPetRepoMock.Setup(r => r.GetByPetIds(It.IsAny<IEnumerable<Guid>>())).Returns([vinculo1, vinculo2]);
         _usuarioRepoMock.Setup(r => r.Find(It.IsAny<System.Linq.Expressions.Expression<Func<Usuario, bool>>>())).Returns([coCuidador]);
 
         // Act

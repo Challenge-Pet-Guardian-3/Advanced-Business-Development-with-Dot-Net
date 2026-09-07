@@ -7,6 +7,7 @@ using OpenTelemetry.Trace;
 using PetGuardian.API.Health;
 using PetGuardian.API.HealthChecks;
 using PetGuardian.API.Middleware;
+using PetGuardian.Application.Common;
 using PetGuardian.Infrastructure.Persistence;
 
 namespace PetGuardian.API.Extensions;
@@ -42,6 +43,7 @@ public static class ObservabilityExtensions
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(ServiceName))
             .WithTracing(tracing => tracing
+                .AddSource(PetGuardianActivitySource.SourceName)
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddConsoleExporter())

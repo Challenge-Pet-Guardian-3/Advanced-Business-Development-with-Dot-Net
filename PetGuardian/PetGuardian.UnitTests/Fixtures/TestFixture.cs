@@ -75,4 +75,54 @@ public class TestFixture
             moduloId: moduloId ?? Guid.NewGuid()
         );
     }
+
+    public Estado CriarEstadoValido(string nome = "São Paulo")
+    {
+        return new Estado(nome);
+    }
+
+    public Cidade CriarCidadeValida(string nome = "Campinas", Guid? estadoId = null)
+    {
+        return new Cidade(nome, estadoId ?? Guid.NewGuid());
+    }
+
+    public Bairro CriarBairroValido(string nome = "Centro", Guid? cidadeId = null)
+    {
+        return new Bairro(nome, cidadeId ?? Guid.NewGuid());
+    }
+
+    public Endereco CriarEnderecoValido(string cep = "01001000", string rua = "Praça da Sé", string numero = "100", Guid? bairroId = null)
+    {
+        return new Endereco(cep, rua, numero, bairroId ?? Guid.NewGuid());
+    }
+
+    public Telefone CriarTelefoneValido(string ddd = "11", string numero = "987654321")
+    {
+        return new Telefone(ddd, numero);
+    }
+
+    public Status CriarStatusValido(string nome = "PENDENTE")
+    {
+        return new Status(nome);
+    }
+
+    public Raca CriarRacaValida(string nome = "Labrador")
+    {
+        return new Raca(nome);
+    }
+
+    public Historico CriarHistoricoValido(string tipo = "CONSULTA_ROTINA", Guid? petId = null)
+    {
+        return new Historico(tipo, DateTime.UtcNow, petId ?? Guid.NewGuid());
+    }
+
+    public UsuarioEndereco CriarUsuarioEnderecoValido(Guid? usuarioId = null, Guid? enderecoId = null)
+    {
+        return new UsuarioEndereco(usuarioId ?? Guid.NewGuid(), enderecoId ?? Guid.NewGuid());
+    }
+
+    public UsuarioPet CriarUsuarioPetValido(Guid? usuarioId = null, Guid? petId = null, bool responPrinc = true)
+    {
+        return new UsuarioPet(usuarioId ?? Guid.NewGuid(), petId ?? Guid.NewGuid(), responPrinc);
+    }
 }

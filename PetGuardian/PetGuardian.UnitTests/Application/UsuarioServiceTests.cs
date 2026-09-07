@@ -51,8 +51,10 @@ public class UsuarioServiceTests(TestFixture fixture)
 
         _usuarioRepoMock.Setup(r => r.ExistsByEmail(request.Email)).Returns(true);
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<InvalidOperationException>(() => service.Create(request));
+
+        // Assert
         Assert.Equal("Já existe um usuário com este e-mail.", ex.Message);
     }
 
