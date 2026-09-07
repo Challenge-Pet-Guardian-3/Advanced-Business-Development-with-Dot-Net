@@ -52,7 +52,14 @@ public static class ObservabilityExtensions
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
                 .AddMeter(RequestMetricsMiddleware.Meter.Name)
-                .AddConsoleExporter());
+                .AddMeter(
+                    "Microsoft.AspNetCore.Hosting",
+                    "Microsoft.AspNetCore.Routing",
+                    "Microsoft.AspNetCore.Server.Kestrel",
+                    "System.Net.Http",
+                    "System.Runtime")
+                .AddConsoleExporter()
+                .AddPrometheusExporter());
 
         return services;
     }
@@ -61,6 +68,9 @@ public static class ObservabilityExtensions
     {
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseMiddleware<RequestMetricsMiddleware>();
+
+        // Endpoint oficial de scraping do Prometheus (/metrics)
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
         // /health -> visão geral (usada por orquestradores simples)
         app.MapHealthChecks("/health", new HealthCheckOptions

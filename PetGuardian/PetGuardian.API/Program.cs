@@ -69,6 +69,10 @@ public class Program
         app.UseSerilogRequestLogging();
 
         app.UseExceptionHandler();
+
+        // Observabilidade (CorrelationId, Prometheus /metrics e Probes /health) antes do SwaggerUI
+        app.UsePetGuardianObservability();
+
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
@@ -77,8 +81,6 @@ public class Program
         });
         app.UseHttpsRedirection();
         app.UseAuthorization();
-
-        app.UsePetGuardianObservability();
 
         app.MapControllers();
         app.Run();

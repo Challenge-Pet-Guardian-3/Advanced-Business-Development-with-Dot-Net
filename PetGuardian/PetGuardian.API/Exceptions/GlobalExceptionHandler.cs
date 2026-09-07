@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,9 @@ public sealed class GlobalExceptionHandler(
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "Exceção capturada no pipeline: {Message}", exception.Message);
+        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+
+        logger.LogError(exception, "Exceção capturada no pipeline: {Message} : TraceId {TraceId}", exception.Message, traceId);
 
         var (statusCode, title, detail) = MapException(exception, environment);
 
@@ -36,8 +39,8 @@ public sealed class GlobalExceptionHandler(
             Instance = httpContext.Request.Path
         };
 
-        // Rastreabilidade padronizada para diagnóstico
-        problem.Extensions["traceId"] = httpContext.TraceIdentifier;
+        // Rastreabilidade padronizada para diagnóstico (W3C OpenTelemetry / Kestrel)
+        problem.Extensions["traceId"] = traceId;
 
         if (httpContext.Request.Headers.TryGetValue(CorrelationIdMiddleware.CorrelationHeader, out var correlationId)
             && !string.IsNullOrWhiteSpace(correlationId))

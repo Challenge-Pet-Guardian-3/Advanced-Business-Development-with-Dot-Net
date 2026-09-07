@@ -176,6 +176,7 @@ A API expõe endpoints estruturados para monitoramento de liveness e readiness d
   - `petguardian.http.request.duration`: Histograma do tempo de resposta (ms) categorizado por rota e status code.
   - `petguardian.http.request.total`: Contador de volume total de requisições.
   - `petguardian.http.request.errors`: Contador de requisições finalizadas com erro (`status >= 500`).
+- **Endpoint de Scraping Prometheus (`/metrics`):** Exposição nativa de métricas no padrão Prometheus via `OpenTelemetry.Exporter.Prometheus.AspNetCore` (`app.UseOpenTelemetryPrometheusScrapingEndpoint()`) para coleta contínua por agentes Prometheus e visualização em dashboards Grafana.
 
 ---
 
@@ -219,7 +220,7 @@ A solução atende ao requisito formal de organização e compartilhamento de co
      * `EnderecoServiceTests`, `BairroServiceTests`, `CidadeServiceTests`, `EstadoServiceTests`
      * `StatusServiceTests`, `RacaServiceTests`, `TelefoneServiceTests`, `HistoricoServiceTests`
      * `UsuarioEnderecoServiceTests`, `TrilhaServiceTests`, `ModuloServiceTests`, `AulaServiceTests`
-2. **PetGuardian.IntegrationTests (102 testes):**
+2. **PetGuardian.IntegrationTests (103 testes):**
    * **16 Suítes Dedicadas de Controllers (1:1 com a API):** Cada um dos 16 controllers da API possui sua própria classe de teste independente validando respostas de sucesso (200, 201, 204) e tratamento estrito de erros (400 Bad Request com validação de payload/domínio, 404 Not Found):
      * `PetControllerIntegrationTests` (POST 201, GET 200, GET 404, PUT 200, DELETE 204, POST 400 dados inválidos)
      * `RacaControllerIntegrationTests` (POST 201, GET 200, GET 404, PUT 200, DELETE 204, POST 400 nome inválido)
@@ -238,7 +239,7 @@ A solução atende ao requisito formal de organização e compartilhamento de co
      * `AulaControllerIntegrationTests` (POST 201, GET 200, GET 404, PUT 200, DELETE 204, POST 400 dados inválidos)
      * `HistoricoControllerIntegrationTests` (POST 201, GET 200, GET 404, GET 200 por pet, PUT 200, DELETE 204, POST 400 dados inválidos)
    * **Observabilidade & Health Probes:**
-     * `HealthCheckEndpointsTests` (Liveness, readiness e integridade geral de probes)
+     * `HealthCheckEndpointsTests` (Liveness `/health/live`, readiness `/health/ready`, integridade `/health` e endpoint Prometheus `/metrics`)
      * `ObservabilityMiddlewareTests` (Propagação de Correlation ID e métricas HTTP)
    * **Auditoria Completa da API (`EndpointAuditTests`):** Execução automatizada e validação de **99 operações HTTP** em todos os controllers, Health Checks e Swagger OpenAPI com 100% de conformidade.
 
@@ -247,7 +248,7 @@ A solução atende ao requisito formal de organização e compartilhamento de co
 Para executar toda a suíte de testes (Unitários e de Integração) a partir da raiz da solução:
 
 ```powershell
-# Executar todos os 293 testes da solução com relatório detalhado
+# Executar todos os 294 testes da solução com relatório detalhado
 dotnet test PetGuardian.sln --logger "console;verbosity=normal"
 ```
 
@@ -257,7 +258,7 @@ Para executar separadamente por projeto:
 # Executar os 191 testes unitários (Domínio + Aplicação com Moq e TestFixture)
 dotnet test PetGuardian.UnitTests\PetGuardian.UnitTests.csproj
 
-# Executar os 102 testes de integração (WebApplicationFactory e IntegrationTestCollection)
+# Executar os 103 testes de integração (WebApplicationFactory e IntegrationTestCollection)
 dotnet test PetGuardian.IntegrationTests\PetGuardian.IntegrationTests.csproj
 
 # Executar a auditoria completa de todas as 99 operações HTTP da API
@@ -267,8 +268,8 @@ dotnet test PetGuardian.IntegrationTests\PetGuardian.IntegrationTests.csproj --f
 ### Resumo da Execução:
 ```text
 Passed!  - Failed: 0, Passed: 191, Skipped: 0, Total: 191 - PetGuardian.UnitTests.dll (net10.0)
-Passed!  - Failed: 0, Passed: 102, Skipped: 0, Total: 102 - PetGuardian.IntegrationTests.dll (net10.0)
-Total Geral: 293 Testes Passando (100% de sucesso)
+Passed!  - Failed: 0, Passed: 103, Skipped: 0, Total: 103 - PetGuardian.IntegrationTests.dll (net10.0)
+Total Geral: 294 Testes Passando (100% de sucesso)
 ```
 
 ---

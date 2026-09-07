@@ -52,4 +52,19 @@ public class HealthCheckEndpointsTests(CustomWebApplicationFactory factory)
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Metrics_EndpointPrometheus_DeveRetornarStatus200ETextoPrometheus()
+    {
+        // Arrange
+        // (Scraping endpoint do Prometheus configurado em /metrics)
+
+        // Act
+        var response = await _client.GetAsync("/metrics");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var content = await response.Content.ReadAsStringAsync();
+        Assert.False(string.IsNullOrWhiteSpace(content));
+    }
 }
