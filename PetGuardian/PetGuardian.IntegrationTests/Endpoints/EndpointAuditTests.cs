@@ -230,8 +230,22 @@ public class EndpointAuditTests(CustomWebApplicationFactory factory, ITestOutput
         sb.AppendLine();
         sb.AppendLine($"**Total de Endpoints Testados e Aprovados:** {_results.Count} operações HTTP com 100% de sucesso.");
 
-        var reportPath = @"C:\Users\Enzo\.gemini\antigravity-ide\brain\29636c94-213d-4dc0-9bf9-e361e45b0cae\endpoint_audit_report.md";
-        File.WriteAllText(reportPath, sb.ToString());
-        output.WriteLine($"Auditoria gravada em {reportPath}. Total de operações: {_results.Count}");
+        // Caminho portável: pasta "AuditReports" ao lado do assembly de testes (existe em qualquer máquina/CI),
+        // em vez de um caminho absoluto fixo de uma máquina específica.
+        var reportDir = Path.Combine(AppContext.BaseDirectory, "AuditReports");
+        var reportPath = Path.Combine(reportDir, "endpoint_audit_report.md");
+
+        try
+        {
+            Directory.CreateDirectory(reportDir);
+            File.WriteAllText(reportPath, sb.ToString());
+            output.WriteLine($"Auditoria gravada em {reportPath}. Total de operações: {_results.Count}");
+        }
+        catch (Exception ex)
+        {
+            // A gravação do relatório é só um artefato informativo; não deve derrubar o teste
+            // se o ambiente de execução não permitir escrita em disco (ex.: alguns runners de CI).
+            output.WriteLine($"Não foi possível gravar o relatório em disco ({ex.Message}). Total de operações: {_results.Count}");
+        }
     }
 }
