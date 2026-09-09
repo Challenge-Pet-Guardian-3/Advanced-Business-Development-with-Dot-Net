@@ -57,6 +57,7 @@ public class PetServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("Raça não encontrada.", ex.Message);
+        _petRepoMock.Verify(r => r.Add(It.IsAny<Pet>()), Times.Never);
     }
 
     [Fact]

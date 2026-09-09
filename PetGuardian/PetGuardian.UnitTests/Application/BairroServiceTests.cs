@@ -54,6 +54,7 @@ public class BairroServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("Cidade não encontrada.", ex.Message);
+        _bairroRepoMock.Verify(r => r.Add(It.IsAny<Bairro>()), Times.Never);
     }
 
     [Fact]

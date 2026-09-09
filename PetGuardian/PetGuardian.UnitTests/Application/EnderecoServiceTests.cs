@@ -81,6 +81,7 @@ public class EnderecoServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("CEP 99999999 não encontrado.", ex.Message);
+        _enderecoRepoMock.Verify(r => r.Add(It.IsAny<Endereco>()), Times.Never);
     }
 
     [Fact]

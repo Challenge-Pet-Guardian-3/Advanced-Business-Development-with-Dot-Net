@@ -73,6 +73,7 @@ public class TarefaServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("Somente cuidadores vinculados ao pet podem receber tarefas.", ex.Message);
+        _tarefaRepoMock.Verify(r => r.Add(It.IsAny<Tarefa>()), Times.Never);
     }
 
     [Fact]

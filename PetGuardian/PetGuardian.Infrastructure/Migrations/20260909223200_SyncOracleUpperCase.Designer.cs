@@ -12,8 +12,8 @@ using PetGuardian.Infrastructure.Persistence;
 namespace PetGuardian.Infrastructure.Migrations
 {
     [DbContext(typeof(PetGuardianContext))]
-    [Migration("20260830005248_Initial")]
-    partial class Initial
+    [Migration("20260909223200_SyncOracleUpperCase")]
+    partial class SyncOracleUpperCase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,49 +30,49 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_aula");
+                        .HasColumnName("ID_AULA");
 
                     b.Property<int>("Concluida")
                         .HasColumnType("NUMBER(1)")
-                        .HasColumnName("concluida");
+                        .HasColumnName("CONCLUIDA");
 
                     b.Property<string>("Conteudo")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("NVARCHAR2(1000)")
-                        .HasColumnName("conteudo");
+                        .HasColumnName("CONTEUDO");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)")
-                        .HasColumnName("descricao");
+                        .HasColumnName("DESCRICAO");
 
                     b.Property<string>("Dificuldade")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("NVARCHAR2(20)")
-                        .HasColumnName("dificuldade");
+                        .HasColumnName("DIFICULDADE");
 
                     b.Property<Guid>("ModuloId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("modulo_id_modulo");
+                        .HasColumnName("MODULO_ID_MODULO");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)")
-                        .HasColumnName("nome");
+                        .HasColumnName("NOME");
 
                     b.Property<short>("PontosAula")
                         .HasColumnType("NUMBER(5)")
-                        .HasColumnName("pontos_aula");
+                        .HasColumnName("PONTOS_AULA");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ModuloId");
 
-                    b.ToTable("aula", (string)null);
+                    b.ToTable("AULA", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Bairro", b =>
@@ -80,23 +80,23 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_bairro");
+                        .HasColumnName("ID_BAIRRO");
 
                     b.Property<Guid>("CidadeId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("cidade_id_cidade");
+                        .HasColumnName("CIDADE_ID_CIDADE");
 
                     b.Property<string>("NomeBairro")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome_bairro");
+                        .HasColumnName("NOME_BAIRRO");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CidadeId");
 
-                    b.ToTable("bairro", (string)null);
+                    b.ToTable("BAIRRO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Cidade", b =>
@@ -104,23 +104,23 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_cidade");
+                        .HasColumnName("ID_CIDADE");
 
                     b.Property<Guid>("EstadoId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("estado_id_estado");
+                        .HasColumnName("ESTADO_ID_ESTADO");
 
                     b.Property<string>("NomeCidade")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome_cidade");
+                        .HasColumnName("NOME_CIDADE");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoId");
 
-                    b.ToTable("cidade", (string)null);
+                    b.ToTable("CIDADE", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Endereco", b =>
@@ -128,35 +128,35 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_endereco");
+                        .HasColumnName("ID_ENDERECO");
 
                     b.Property<Guid>("BairroId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("bairro_id_bairro");
+                        .HasColumnName("BAIRRO_ID_BAIRRO");
 
                     b.Property<string>("Cep")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("NVARCHAR2(8)")
-                        .HasColumnName("cep");
+                        .HasColumnName("CEP");
 
                     b.Property<string>("Numero")
                         .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("NVARCHAR2(5)")
-                        .HasColumnName("numero");
+                        .HasColumnName("NUMERO");
 
                     b.Property<string>("Rua")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("NVARCHAR2(150)")
-                        .HasColumnName("rua");
+                        .HasColumnName("RUA");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BairroId");
 
-                    b.ToTable("endereco", (string)null);
+                    b.ToTable("ENDERECO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Estado", b =>
@@ -164,17 +164,17 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_estado");
+                        .HasColumnName("ID_ESTADO");
 
                     b.Property<string>("NomeEstado")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome_estado");
+                        .HasColumnName("NOME_ESTADO");
 
                     b.HasKey("Id");
 
-                    b.ToTable("estado", (string)null);
+                    b.ToTable("ESTADO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Historico", b =>
@@ -182,27 +182,27 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_hist");
+                        .HasColumnName("ID_HIST");
 
                     b.Property<DateTime>("DataHist")
                         .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("data_hist");
+                        .HasColumnName("DATA_HIST");
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("pet_id_pet");
+                        .HasColumnName("PET_ID_PET");
 
                     b.Property<string>("TipoHist")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("tipo_hist");
+                        .HasColumnName("TIPO_HIST");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("historico", (string)null);
+                    b.ToTable("HISTORICO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Modulo", b =>
@@ -210,35 +210,35 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_modulo");
+                        .HasColumnName("ID_MODULO");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)")
-                        .HasColumnName("descricao");
+                        .HasColumnName("DESCRICAO");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)")
-                        .HasColumnName("nome");
+                        .HasColumnName("NOME");
 
                     b.Property<string>("TempoConclusao")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("NVARCHAR2(10)")
-                        .HasColumnName("tempo_conclusao");
+                        .HasColumnName("TEMPO_CONCLUSAO");
 
                     b.Property<Guid>("TrilhaId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("trilha_id_trilha");
+                        .HasColumnName("TRILHA_ID_TRILHA");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TrilhaId");
 
-                    b.ToTable("modulo", (string)null);
+                    b.ToTable("MODULO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Pet", b =>
@@ -246,43 +246,43 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_pet");
+                        .HasColumnName("ID_PET");
 
                     b.Property<int>("Castrado")
                         .HasColumnType("NUMBER(1)")
-                        .HasColumnName("castrado");
+                        .HasColumnName("CASTRADO");
 
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("DATE")
-                        .HasColumnName("data_nasc");
+                        .HasColumnName("DATA_NASC");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome");
+                        .HasColumnName("NOME");
 
                     b.Property<string>("Porte")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("NVARCHAR2(10)")
-                        .HasColumnName("porte");
+                        .HasColumnName("PORTE");
 
                     b.Property<Guid>("RacaId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("raca_id_raca");
+                        .HasColumnName("RACA_ID_RACA");
 
                     b.Property<string>("Sexo")
                         .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("NVARCHAR2(1)")
-                        .HasColumnName("sexo");
+                        .HasColumnName("SEXO");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RacaId");
 
-                    b.ToTable("pet", (string)null);
+                    b.ToTable("PET", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Raca", b =>
@@ -290,17 +290,17 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_raca");
+                        .HasColumnName("ID_RACA");
 
                     b.Property<string>("NomeRaca")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome_raca");
+                        .HasColumnName("NOME_RACA");
 
                     b.HasKey("Id");
 
-                    b.ToTable("raca", (string)null);
+                    b.ToTable("RACA", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Status", b =>
@@ -308,17 +308,17 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_status");
+                        .HasColumnName("ID_STATUS");
 
                     b.Property<string>("NomeStatus")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("NVARCHAR2(15)")
-                        .HasColumnName("nome_status");
+                        .HasColumnName("NOME_STATUS");
 
                     b.HasKey("Id");
 
-                    b.ToTable("status", (string)null);
+                    b.ToTable("STATUS", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Tarefa", b =>
@@ -326,47 +326,47 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_tarefa");
+                        .HasColumnName("ID_TAREFA");
 
                     b.Property<DateTime?>("Conclusao")
                         .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("conclusao");
+                        .HasColumnName("CONCLUSAO");
 
                     b.Property<DateTime>("Criacao")
                         .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("criacao");
+                        .HasColumnName("CRIACAO");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("NVARCHAR2(200)")
-                        .HasColumnName("descricao");
+                        .HasColumnName("DESCRICAO");
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("pet_id_pet");
+                        .HasColumnName("PET_ID_PET");
 
                     b.Property<byte>("PontosTarefa")
                         .HasColumnType("NUMBER(3)")
-                        .HasColumnName("pontos_tarefa");
+                        .HasColumnName("PONTOS_TAREFA");
 
                     b.Property<DateTime>("Prazo")
                         .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("prazo");
+                        .HasColumnName("PRAZO");
 
                     b.Property<Guid>("StatusId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("status_id_status");
+                        .HasColumnName("STATUS_ID_STATUS");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("titulo");
+                        .HasColumnName("TITULO");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("usuario_id_usuario");
+                        .HasColumnName("USUARIO_ID_USUARIO");
 
                     b.HasKey("Id");
 
@@ -376,7 +376,7 @@ namespace PetGuardian.Infrastructure.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("tarefa", (string)null);
+                    b.ToTable("TAREFA", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Telefone", b =>
@@ -384,23 +384,23 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_telefone");
+                        .HasColumnName("ID_TELEFONE");
 
                     b.Property<string>("NumDdd")
                         .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("NVARCHAR2(2)")
-                        .HasColumnName("num_ddd");
+                        .HasColumnName("NUM_DDD");
 
                     b.Property<string>("NumTel")
                         .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("NVARCHAR2(9)")
-                        .HasColumnName("num_tel");
+                        .HasColumnName("NUM_TEL");
 
                     b.HasKey("Id");
 
-                    b.ToTable("telefone", (string)null);
+                    b.ToTable("TELEFONE", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Trilha", b =>
@@ -408,29 +408,29 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_trilha");
+                        .HasColumnName("ID_TRILHA");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("NVARCHAR2(200)")
-                        .HasColumnName("descricao");
+                        .HasColumnName("DESCRICAO");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("NVARCHAR2(30)")
-                        .HasColumnName("nome");
+                        .HasColumnName("NOME");
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("pet_id_pet");
+                        .HasColumnName("PET_ID_PET");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("trilha", (string)null);
+                    b.ToTable("TRILHA", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Usuario", b =>
@@ -438,35 +438,41 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("id_usuario");
+                        .HasColumnName("ID_USUARIO");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)")
-                        .HasColumnName("email");
+                        .HasColumnName("EMAIL");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)")
-                        .HasColumnName("nome");
+                        .HasColumnName("NOME");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("NVARCHAR2(10)")
-                        .HasColumnName("role");
+                        .HasColumnName("ROLE");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("NVARCHAR2(64)")
+                        .HasColumnName("SALT");
 
                     b.Property<string>("Senha")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("NVARCHAR2(60)")
-                        .HasColumnName("senha");
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("SENHA");
 
                     b.Property<Guid>("TelefoneId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("telefone_id_telefone");
+                        .HasColumnName("TELEFONE_ID_TELEFONE");
 
                     b.HasKey("Id");
 
@@ -476,45 +482,45 @@ namespace PetGuardian.Infrastructure.Migrations
                     b.HasIndex("TelefoneId")
                         .IsUnique();
 
-                    b.ToTable("usuario", (string)null);
+                    b.ToTable("USUARIO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.UsuarioEndereco", b =>
                 {
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("usuario_id_usuario");
+                        .HasColumnName("USUARIO_ID_USUARIO");
 
                     b.Property<Guid>("EnderecoId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("endereco_id_endereco");
+                        .HasColumnName("ENDERECO_ID_ENDERECO");
 
                     b.HasKey("UsuarioId", "EnderecoId");
 
                     b.HasIndex("EnderecoId");
 
-                    b.ToTable("usuario_endereco", (string)null);
+                    b.ToTable("USUARIO_ENDERECO", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.UsuarioPet", b =>
                 {
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("usuario_id_usuario");
+                        .HasColumnName("USUARIO_ID_USUARIO");
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("RAW(16)")
-                        .HasColumnName("pet_id_pet");
+                        .HasColumnName("PET_ID_PET");
 
                     b.Property<int>("ResponPrinc")
                         .HasColumnType("NUMBER(1)")
-                        .HasColumnName("respon_princ");
+                        .HasColumnName("RESPON_PRINC");
 
                     b.HasKey("UsuarioId", "PetId");
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("usuario_pet", (string)null);
+                    b.ToTable("USUARIO_PET", (string)null);
                 });
 
             modelBuilder.Entity("PetGuardian.Domain.Entities.Aula", b =>

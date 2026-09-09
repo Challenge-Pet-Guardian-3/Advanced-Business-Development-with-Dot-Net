@@ -32,6 +32,7 @@ public static class ObservabilityExtensions
         });
 
         services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy("Processo da API ativo e operacional."), tags: ["live"])
             .AddCheck<OracleDbHealthCheck>(
                 "oracle-database",
                 tags: ["ready", "db"])
@@ -85,10 +86,10 @@ public static class ObservabilityExtensions
             ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
         });
 
-        // /health/live -> liveness simples, sem dependências externas
+        // /health/live -> liveness simples, sem dependências externas (check do processo)
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
-            Predicate = _ => false,
+            Predicate = check => check.Tags.Contains("live"),
             ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
         });
 

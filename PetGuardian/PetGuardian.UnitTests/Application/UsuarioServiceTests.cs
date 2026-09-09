@@ -56,6 +56,7 @@ public class UsuarioServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("Já existe um usuário com este e-mail.", ex.Message);
+        _usuarioRepoMock.Verify(r => r.Add(It.IsAny<Usuario>()), Times.Never);
     }
 
     [Fact]

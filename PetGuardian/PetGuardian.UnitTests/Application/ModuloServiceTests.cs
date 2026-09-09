@@ -54,6 +54,7 @@ public class ModuloServiceTests(TestFixture fixture)
 
         // Assert
         Assert.Equal("Trilha não encontrada.", ex.Message);
+        _moduloRepoMock.Verify(m => m.Add(It.IsAny<Modulo>()), Times.Never);
     }
 
     [Fact]

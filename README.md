@@ -1,7 +1,7 @@
 # 🐾 PetGuardian — Plataforma de Cuidado Colaborativo e Saúde Animal
 
 > **Advanced Business Development with .NET** — FIAP (2º Ano ADS / 2TDSPG — Challenge 2026 - 2º Semestre)  
-> API RESTful corporativa desenvolvida em **.NET 10** fundamentada em **Clean Architecture (DDD)**, princípios **SOLID**, **DRY** e **Clean Code**, camadas completas de **Monitoramento e Observabilidade** (Health Checks com `HealthCheckResponseWriter`, Logging Estruturado Serilog com `X-Correlation-ID`, OpenTelemetry Distributed Tracing e Métricas), segurança de senhas com **BCrypt + Salt criptográfico** e suíte de **293 Testes Automatizados (Padrão AAA)** com xUnit, Moq e WebApplicationFactory.
+> API RESTful corporativa desenvolvida em **.NET 10** fundamentada em **Clean Architecture (DDD)**, princípios **SOLID**, **DRY** e **Clean Code**, camadas completas de **Monitoramento e Observabilidade** (Health Checks com `HealthCheckResponseWriter`, Logging Estruturado Serilog com `X-Correlation-ID`, OpenTelemetry Distributed Tracing e Métricas), segurança de senhas com **BCrypt + Salt criptográfico** e suíte de **294 Testes Automatizados (Padrão AAA)** com xUnit, Moq e WebApplicationFactory.
 
 ---
 
@@ -14,7 +14,7 @@
 ![Serilog](https://img.shields.io/badge/Serilog-Structured%20Logs-000000?logo=serilog&logoColor=white&style=for-the-badge)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Tracing%20%26%20Metrics-4A154B?logo=opentelemetry&logoColor=white&style=for-the-badge)
 ![BCrypt](https://img.shields.io/badge/BCrypt-Security%20%26%20Salt-green?style=for-the-badge)
-![xUnit](https://img.shields.io/badge/xUnit-293%20Tests%20Passing-brightgreen?style=for-the-badge)
+![xUnit](https://img.shields.io/badge/xUnit-294%20Tests%20Passing-brightgreen?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white&style=for-the-badge)
 
 ---
