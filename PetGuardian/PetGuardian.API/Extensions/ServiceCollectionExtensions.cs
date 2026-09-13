@@ -1,4 +1,7 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PetGuardian.Application.Repositories;
 using PetGuardian.Application.Services.Implementations;
 using PetGuardian.Application.Services.Interfaces;
@@ -24,7 +27,7 @@ public static class PetGuardianServiceCollectionExtensions
 
         services.AddDbContext<PetGuardianContext>(options =>
             options.UseOracle(connectionString, b =>
-                b.UseOracleSQLCompatibility(Microsoft.EntityFrameworkCore.OracleSQLCompatibility.DatabaseVersion19)));
+                b.UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion19)));
 
         return services;
     }
@@ -79,6 +82,43 @@ public static class PetGuardianServiceCollectionExtensions
         // Join tables
         services.AddScoped<IUsuarioPetService, UsuarioPetService>();
         services.AddScoped<IUsuarioEnderecoService, UsuarioEnderecoService>();
+
+        // Segurança / Autenticação
+        services.AddScoped<ITokenService, TokenService>();
+
+        return services;
+    }
+
+    /// <summary>Configura autenticação JWT Bearer oficial da Microsoft e autorização.</summary>
+    public static IServiceCollection AddPetGuardianJwtAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var jwtSecret = configuration["Jwt:SecretKey"] ?? TokenService.DefaultSecret;
+        var keyBytes = Encoding.UTF8.GetBytes(jwtSecret.PadRight(32));
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                ValidateIssuer = true,
+                ValidIssuer = TokenService.Issuer,
+                ValidateAudience = true,
+                ValidAudience = TokenService.Audience,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+        services.AddAuthorization();
 
         return services;
     }

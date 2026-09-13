@@ -1,7 +1,7 @@
 # 🐾 PetGuardian — Plataforma de Cuidado Colaborativo e Saúde Animal
 
 > **Advanced Business Development with .NET** — FIAP (2º Ano ADS / 2TDSPG — Challenge 2026 - 2º Semestre)  
-> API RESTful corporativa desenvolvida em **.NET 10** fundamentada em **Clean Architecture (DDD)**, princípios **SOLID**, **DRY** e **Clean Code**, camadas completas de **Monitoramento e Observabilidade** (Health Checks com `HealthCheckResponseWriter`, Logging Estruturado Serilog com `X-Correlation-ID`, OpenTelemetry Distributed Tracing e Métricas), segurança de senhas com **BCrypt + Salt criptográfico** e suíte de **294 Testes Automatizados (Padrão AAA)** com xUnit, Moq e WebApplicationFactory.
+> API RESTful corporativa desenvolvida em **.NET 10** fundamentada em **Clean Architecture (DDD)**, princípios **SOLID**, **DRY** e **Clean Code**, camadas completas de **Monitoramento e Observabilidade** (Health Checks com `HealthCheckResponseWriter`, Logging Estruturado Serilog com `X-Correlation-ID`, OpenTelemetry Distributed Tracing e Métricas), segurança de senhas com **BCrypt + Salt criptográfico**, **Autenticação JWT Bearer (RFC 7519 / HS256)** nativa e suíte de **301 Testes Automatizados (Padrão AAA)** com xUnit, Moq e WebApplicationFactory.
 
 ---
 
@@ -13,8 +13,9 @@
 ![Oracle Database](https://img.shields.io/badge/Oracle-19c%20%2F%2021c-F80000?logo=oracle&logoColor=white&style=for-the-badge)
 ![Serilog](https://img.shields.io/badge/Serilog-Structured%20Logs-000000?logo=serilog&logoColor=white&style=for-the-badge)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Tracing%20%26%20Metrics-4A154B?logo=opentelemetry&logoColor=white&style=for-the-badge)
+![JWT](https://img.shields.io/badge/JWT-Bearer%20HS256-orange?style=for-the-badge)
 ![BCrypt](https://img.shields.io/badge/BCrypt-Security%20%26%20Salt-green?style=for-the-badge)
-![xUnit](https://img.shields.io/badge/xUnit-294%20Tests%20Passing-brightgreen?style=for-the-badge)
+![xUnit](https://img.shields.io/badge/xUnit-301%20Tests%20Passing-brightgreen?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white&style=for-the-badge)
 
 ---
@@ -77,6 +78,54 @@ A base é composta exatamente por **16 tabelas oficiais normalizadas**:
 | `USUARIO` | `Usuario` | Tutores e cuidadores (senhas protegidas com BCrypt + Salt exclusivo) |
 | `USUARIO_ENDERECO` | `UsuarioEndereco` | Relação associativa entre usuários e endereços |
 | `USUARIO_PET` | `UsuarioPet` | Care Circle: Rede N:N de cuidadores com eleição do tutor principal |
+
+---
+
+### 📸 Evidências das Tabelas Populadas no Oracle Database (SQL Developer)
+
+Abaixo constam as capturas de tela das tabelas físicas populadas e estruturadas no banco de dados Oracle oficial da FIAP (`oracle.fiap.com.br:1521/orcl` — Esquema `RM561432`):
+
+#### 1. Usuários, Contatos e Care Circle
+* **Tabela `USUARIO`:** Tutores e cuidadores com senhas protegidas via BCrypt e Salt exclusivo:
+  ![Tabela USUARIO](docs/usuarios.png)
+* **Tabela `TELEFONE`:** Contatos telefônicos associados aos usuários:
+  ![Tabela TELEFONE](docs/telefones.png)
+* **Tabela `USUARIO_PET`:** Vínculo N:N da rede de cuidado (Care Circle) e eleição de tutor principal:
+  ![Tabela USUARIO_PET](docs/usuario_pet.png)
+* **Tabela `USUARIO_ENDERECO`:** Vínculo associativo entre usuários e endereços cadastrados:
+  ![Tabela USUARIO_ENDERECO](docs/usuario_endereco.png)
+
+#### 2. Animais, Raças e Rotinas de Cuidado
+* **Tabela `PET`:** Animais domésticos, porte, dados vitais e score acumulado:
+  ![Tabela PET](docs/pets.png)
+* **Tabela `RACA`:** Catálogo de raças caninas e felinas:
+  ![Tabela RACA](docs/racas.png)
+* **Tabela `TAREFA`:** Rotinas de cuidado agendadas com pontuação gamificada:
+  ![Tabela TAREFA](docs/tarefas.png)
+* **Tabela `STATUS`:** Ciclo de vida das tarefas (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`):
+  ![Tabela STATUS](docs/status.png)
+
+#### 3. Localização e Resolução Automática de Endereços
+* **Tabela `ENDERECO`:** Endereços cadastrados e enriquecidos via integração ViaCEP:
+  ![Tabela ENDERECO](docs/enderecos.png)
+* **Tabela `BAIRRO`:** Bairros normalizados integrados à estrutura territorial:
+  ![Tabela BAIRRO](docs/bairros.png)
+* **Tabela `CIDADE`:** Cidades federadas vinculadas aos estados:
+  ![Tabela CIDADE](docs/cidades.png)
+* **Tabela `ESTADO`:** Unidades Federativas (UF) brasileiras:
+  ![Tabela ESTADO](docs/estados.png)
+
+#### 4. Trilhas, Módulos e Aulas de Capacitação
+* **Tabela `TRILHA`:** Trilhas temáticas de aprendizado para capacitação de tutores:
+  ![Tabela TRILHA](docs/trilha.png)
+* **Tabela `MODULO`:** Módulos de conteúdo organizados por trilha educativa:
+  ![Tabela MODULO](docs/modulo.png)
+* **Tabela `AULA`:** Aulas individuais com pontuação de gamificação educativa:
+  ![Tabela AULA](docs/aula.png)
+
+#### 5. Controle de Versão e Migrações de Banco de Dados
+* **Tabela `__EFMigrationsHistory`:** Histórico de migrações e sincronização do esquema no Oracle:
+  ![Tabela __EFMigrationsHistory](docs/migration.png)
 
 ---
 
@@ -159,6 +208,9 @@ A API expõe endpoints estruturados para monitoramento de liveness e readiness d
 }
 ```
 
+**Evidência da Execução do Health Check (`/health`):**
+![Health Checks](docs/health.png)
+
 ### 2. Logging Estruturado com Serilog
 - **Níveis de Log:** `Information`, `Warning` e `Error` configurados via `appsettings.json`.
 - **Saídas (Sinks):** 
@@ -178,11 +230,14 @@ A API expõe endpoints estruturados para monitoramento de liveness e readiness d
   - `petguardian.http.request.errors`: Contador de requisições finalizadas com erro (`status >= 500`).
 - **Endpoint de Scraping Prometheus (`/metrics`):** Exposição nativa de métricas no padrão Prometheus via `OpenTelemetry.Exporter.Prometheus.AspNetCore` (`app.UseOpenTelemetryPrometheusScrapingEndpoint()`) para coleta contínua por agentes Prometheus e visualização em dashboards Grafana.
 
+**Evidência do Endpoint de Métricas Prometheus (`/metrics`):**
+![Métricas Prometheus com OpenTelemetry](docs/metrics.png)
+
 ---
 
-## 🧪 Suíte de Testes Automatizados (293 Testes / Padrão AAA)
+## 🧪 Suíte de Testes Automatizados (301 Testes / Padrão AAA)
 
-A solução conta com **293 testes automatizados** distribuídos entre as camadas de Domínio, Aplicação e Apresentação, seguindo rigorosamente o padrão **AAA (Arrange, Act, Assert)** e convenção de nomenclatura `MetodoTestado_Cenario_ResultadoEsperado`. A arquitetura estabelece uma **simetria 1:1 perfeita** em todas as camadas (16 Entidades no Domínio, 16 Serviços na Aplicação e 16 Controllers na API).
+A solução conta com **301 testes automatizados** distribuídos entre as camadas de Domínio, Aplicação e Apresentação, seguindo rigorosamente o padrão **AAA (Arrange, Act, Assert)** e convenção de nomenclatura `MetodoTestado_Cenario_ResultadoEsperado`. A arquitetura estabelece uma **simetria 1:1 perfeita** em todas as camadas (16 Entidades no Domínio, 16 Serviços na Aplicação e 17 Controllers na API com o módulo de autenticação).
 
 ### 🧩 Compartilhamento de Contexto com Fixtures e Collection Fixtures (15 pts):
 A solução atende ao requisito formal de organização e compartilhamento de contexto via xUnit:
@@ -193,7 +248,7 @@ A solução atende ao requisito formal de organização e compartilhamento de co
 2. **Testes de Integração (`CustomWebApplicationFactory` + `IntegrationTestCollection`):**
    * **`CustomWebApplicationFactory.cs`:** Especialização de `WebApplicationFactory<Program>` que sobe o pipeline HTTP completo da API em memória, substituindo o Oracle por InMemory Database isolado e o ViaCEP por mock determinístico.
    * **`IntegrationTestCollection.cs`:** Define a Collection Fixture decorada com `[CollectionDefinition(Name)]` implementando `ICollectionFixture<CustomWebApplicationFactory>`.
-   * **Ciclo de Vida Compartilhado:** Todas as 19 classes de testes de integração compartilham o mesmo contexto HTTP através de `[Collection(IntegrationTestCollection.Name)]`, eliminando o overhead de subir múltiplos servidores e assegurando isolamento transacional.
+   * **Ciclo de Vida Compartilhado:** Todas as 20 classes de testes de integração compartilham o mesmo contexto HTTP através de `[Collection(IntegrationTestCollection.Name)]`, eliminando o overhead de subir múltiplos servidores e assegurando isolamento transacional.
 
 ### Organização das Suítes de Teste:
 1. **PetGuardian.UnitTests (191 testes):**
@@ -220,7 +275,9 @@ A solução atende ao requisito formal de organização e compartilhamento de co
      * `EnderecoServiceTests`, `BairroServiceTests`, `CidadeServiceTests`, `EstadoServiceTests`
      * `StatusServiceTests`, `RacaServiceTests`, `TelefoneServiceTests`, `HistoricoServiceTests`
      * `UsuarioEnderecoServiceTests`, `TrilhaServiceTests`, `ModuloServiceTests`, `AulaServiceTests`
-2. **PetGuardian.IntegrationTests (103 testes):**
+2. **PetGuardian.IntegrationTests (110 testes):**
+   * **Autenticação & Segurança JWT:**
+     * `AuthControllerIntegrationTests` (Login 200 com JWT, senha incorreta 401, e-mail inexistente 401, rota alternativa `/login` 200, `/api/auth/me` sem token 401, `/api/auth/me` com token válido 200, `/api/auth/me` com token inválido 401).
    * **16 Suítes Dedicadas de Controllers (1:1 com a API):** Cada um dos 16 controllers da API possui sua própria classe de teste independente validando respostas de sucesso (200, 201, 204) e tratamento estrito de erros (400 Bad Request com validação de payload/domínio, 404 Not Found):
      * `PetControllerIntegrationTests` (POST 201, GET 200, GET 404, PUT 200, DELETE 204, POST 400 dados inválidos)
      * `RacaControllerIntegrationTests` (POST 201, GET 200, GET 404, PUT 200, DELETE 204, POST 400 nome inválido)
@@ -248,7 +305,7 @@ A solução atende ao requisito formal de organização e compartilhamento de co
 Para executar toda a suíte de testes (Unitários e de Integração) a partir da raiz da solução:
 
 ```powershell
-# Executar todos os 294 testes da solução com relatório detalhado
+# Executar todos os 301 testes da solução com relatório detalhado
 dotnet test PetGuardian.sln --logger "console;verbosity=normal"
 ```
 
@@ -258,7 +315,7 @@ Para executar separadamente por projeto:
 # Executar os 191 testes unitários (Domínio + Aplicação com Moq e TestFixture)
 dotnet test PetGuardian.UnitTests\PetGuardian.UnitTests.csproj
 
-# Executar os 103 testes de integração (WebApplicationFactory e IntegrationTestCollection)
+# Executar os 110 testes de integração (WebApplicationFactory e IntegrationTestCollection)
 dotnet test PetGuardian.IntegrationTests\PetGuardian.IntegrationTests.csproj
 
 # Executar a auditoria completa de todas as 99 operações HTTP da API
@@ -268,8 +325,8 @@ dotnet test PetGuardian.IntegrationTests\PetGuardian.IntegrationTests.csproj --f
 ### Resumo da Execução:
 ```text
 Passed!  - Failed: 0, Passed: 191, Skipped: 0, Total: 191 - PetGuardian.UnitTests.dll (net10.0)
-Passed!  - Failed: 0, Passed: 103, Skipped: 0, Total: 103 - PetGuardian.IntegrationTests.dll (net10.0)
-Total Geral: 294 Testes Passando (100% de sucesso)
+Passed!  - Failed: 0, Passed: 110, Skipped: 0, Total: 110 - PetGuardian.IntegrationTests.dll (net10.0)
+Total Geral: 301 Testes Passando (100% de sucesso)
 ```
 
 ---
@@ -291,23 +348,62 @@ Total Geral: 294 Testes Passando (100% de sucesso)
 
 ---
 
-### Opção B: Execução Local via .NET CLI
+### Opção B: Execução Local via .NET CLI & Conexão com o Banco de Dados
 
-1. **Configuração de Secrets (Banco Oracle FIAP):**
-   ```powershell
-   dotnet user-secrets set "ConnectionStrings:PetGuardianOracle" "User Id=RMxxxxxx;Password=xxxxxx;Data Source=oracle.fiap.com.br:1521/orcl;" --project .\PetGuardian.API
-   ```
-2. **Executar a API:**
-   ```powershell
-   dotnet run --project .\PetGuardian.API
-   ```
-   * Swagger UI disponível diretamente na raiz: `http://localhost:5289/`
+Para conectar ao banco de dados Oracle oficial da FIAP para avaliação, utilize a connection string configurada com as credenciais da equipe:
+
+#### 1. Via `dotnet user-secrets` (Recomendado para Execução Local)
+Navegue até a pasta da solução e execute:
+```powershell
+# Configurar a connection string oficial do banco Oracle FIAP nos secrets locais:
+dotnet user-secrets set "ConnectionStrings:PetGuardianOracle" "User Id=RM561432;Password=301006;Data Source=oracle.fiap.com.br:1521/orcl;" --project .\PetGuardian.API
+```
+
+#### 2. Via Variável de Ambiente (PowerShell / Terminal da Sessão)
+```powershell
+# Configurar a variável para a sessão atual do terminal PowerShell:
+$env:ConnectionStrings__PetGuardianOracle = "User Id=RM561432;Password=301006;Data Source=oracle.fiap.com.br:1521/orcl;"
+
+# Executar a API:
+dotnet run --project .\PetGuardian.API
+```
+
+#### 3. Via Variável de Ambiente (Bash / Linux / MacOS)
+```bash
+export ConnectionStrings__PetGuardianOracle="User Id=RM561432;Password=301006;Data Source=oracle.fiap.com.br:1521/orcl;"
+dotnet run --project ./PetGuardian.API
+```
+
+#### 4. Validar Conectividade com o Banco de Dados em Execução
+Com a aplicação rodando (porta padrão `5289` no CLI ou `8080` no Docker), consulte a probe de prontidão que valida a conectividade com o Oracle via `Database.CanConnectAsync`:
+```powershell
+# Teste via PowerShell:
+Invoke-RestMethod -Uri "http://localhost:5289/health/ready" -Method Get | ConvertTo-Json
+
+# Teste via cURL:
+curl -i http://localhost:5289/health/ready
+```
+*Se a conexão for bem-sucedida, o status retornado será `200 OK` com `"status": "Healthy"` no componente `"oracle-database"`.*
 
 ---
 
 ## 📋 Catálogo Completo de Endpoints REST (CRUD / OpenAPI)
 
-Todas as 16 entidades e agregados contam com rotas padronizadas, suporte completo a atualização com validação de regras de negócio (`PUT`), deleção (`DELETE`), persistência (`POST`) e consultas especializadas (`GET`).
+Todas as entidades e agregados contam com rotas padronizadas, suporte completo a atualização com validação de regras de negócio (`PUT`), deleção (`DELETE`), persistência (`POST`), consultas especializadas (`GET`) e módulo de autenticação stateless via **JWT Bearer**.
+
+**Interface Interativa Swagger UI (`/index.html`):**
+![Documentação Swagger OpenAPI](docs/swagger.png)
+
+---
+
+### 🔐 0. Autenticação & Sessão JWT (`/api/auth` & `/login`)
+*Emissão e validação de tokens JWT (RFC 7519 / HS256) compatível com o aplicativo Mobile.*
+
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Autentica o usuário com e-mail/senha e emite token JWT assinado digitalmente |
+| `POST` | `/login` | Rota alternativa de autenticação para integração direta e transparente com o front-end Mobile |
+| `GET` | `/api/auth/me` | Retorna o perfil do usuário logado através da validação do cabeçalho `Authorization: Bearer {token}` (`[Authorize]`) |
 
 ---
 

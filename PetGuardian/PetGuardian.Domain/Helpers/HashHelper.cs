@@ -12,6 +12,9 @@ public static class HashHelper
     
     public static bool Verify(string rawPassword, string salt, string hashedPassword)
     {
+        if (string.IsNullOrWhiteSpace(rawPassword) || string.IsNullOrWhiteSpace(hashedPassword))
+            return false;
+
         return BCrypt.Net.BCrypt.Verify(rawPassword + salt, hashedPassword);
     }
 }

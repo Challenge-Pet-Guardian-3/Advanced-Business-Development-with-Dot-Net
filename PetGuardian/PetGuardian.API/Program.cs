@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using Microsoft.OpenApi;
 using PetGuardian.API.Exceptions;
 using PetGuardian.API.Extensions;
@@ -32,6 +32,7 @@ public class Program
         builder.Services.AddPetGuardianDbContext(builder.Configuration);
         builder.Services.AddPetGuardianRepositories();
         builder.Services.AddPetGuardianApplicationServices();
+        builder.Services.AddPetGuardianJwtAuthentication(builder.Configuration);
         builder.Services.AddPetGuardianObservability(builder.Configuration);
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -50,7 +51,7 @@ public class Program
                     Email = "contato@petguardian.com"
                 }
             });
-            var apiXml = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var apiXml = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var apiXmlPath = Path.Combine(AppContext.BaseDirectory, apiXml);
             if (File.Exists(apiXmlPath))
             {
@@ -62,6 +63,15 @@ public class Program
             {
                 options.IncludeXmlComments(appXmlPath);
             }
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Informe o token JWT no formato: Bearer {token}"
+            });
         });
 
         var app = builder.Build();
@@ -80,6 +90,7 @@ public class Program
             options.RoutePrefix = string.Empty;
         });
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
